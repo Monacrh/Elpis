@@ -273,7 +273,7 @@ const Footer = () => {
           </div>
           
           {/* Pixel Divider */}
-          <div 
+          {/* <div 
             className="mb-8"
             style={{
               height: '4px',
@@ -290,7 +290,7 @@ const Footer = () => {
               )`,
               imageRendering: 'pixelated',
             }}
-          />
+          /> */}
           
           {/* Bottom Footer */}
           <div className="text-center">
