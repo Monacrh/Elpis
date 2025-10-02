@@ -1,12 +1,13 @@
-'use client'
+"use client"
 
 import React, { useEffect, useState } from "react";
 import { FiChevronRight } from "react-icons/fi";
 import Footer from "../components/Footer";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 export default function LandingPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
