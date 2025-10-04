@@ -18,25 +18,25 @@ export default function AuthPage() {
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     
-    if (isSignUp) {
-      // Sign Up validation
-      if (password !== confirmPassword) {
-        setError("Passwords don't match!");
-        return;
-      }
-      if (password.length < 6) {
-        setError("Password must be at least 6 characters!");
-        return;
-      }
-      // Handle sign up logic here
-      console.log("Sign Up:", { fullName, email, password });
-    } else {
-      // Sign In logic
-      console.log("Sign In:", { email, password });
-    }
+    // if (isSignUp) {
+    //   // Sign Up validation
+    //   if (password !== confirmPassword) {
+    //     setError("Passwords don't match!");
+    //     return;
+    //   }
+    //   if (password.length < 6) {
+    //     setError("Password must be at least 6 characters!");
+    //     return;
+    //   }
+    //   // Handle sign up logic here
+    //   console.log("Sign Up:", { fullName, email, password });
+    // } else {
+    //   // Sign In logic
+    //   console.log("Sign In:", { email, password });
+    // }
     
     // Redirect after successful login/signup
-    redirect('/landingpage');
+    redirect('/home');
   };
 
   return (
@@ -239,7 +239,7 @@ export default function AuthPage() {
                 placeholder="MAIL@ABC.COM"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
+                // required
                 className="w-full px-4 py-3"
                 style={{
                   border: '4px solid #2D3748',
@@ -269,7 +269,7 @@ export default function AuthPage() {
                   placeholder="**********"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
+                  // required
                   className="w-full px-4 py-3 pr-12"
                   style={{
                     border: '4px solid #2D3748',
