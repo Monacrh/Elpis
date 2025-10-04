@@ -569,10 +569,10 @@ const HomePage = () => {
           </div>
 
          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* {tasks.map((task) => (
+            {tasks.map((task) => (
                 <UnifiedCard key={task.id} type="task" data={task} />
-            ))} */}
-            <UnifiedCard/>
+            ))}
+            {/* <UnifiedCard/> */}
         </div>
         </div>
       </main>
@@ -708,10 +708,10 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* {foods.map((food) => (
+            {foods.map((food) => (
                 <UnifiedCard key={food.id} type="food" data={food} />
-            ))} */}
-            <UnifiedCard/>
+            ))}
+            {/* <UnifiedCard/> */}
           </div>
         </div>
       </main>

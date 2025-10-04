@@ -1,108 +1,273 @@
 import React, { useState } from "react";
-import { MapPin } from "lucide-react";
-import router from "next/router";
-import Image from "next/image";
+import { MapPin, Clock, DollarSign, Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 
+type CardType = 'task' | 'food';
 
-export default function Card() {
+interface CardProps {
+  type: CardType;
+  data: TaskData | FoodData;
+}
+
+interface TaskData {
+  id: number;
+  title: string;
+  reward: string;
+  duration: string;
+  location: string;
+  icon: string;
+}
+
+interface FoodData {
+  id: number;
+  name: string;
+  price: string;
+  rating: string;
+  location: string;
+  icon: string;
+}
+
+export default function UnifiedCard({ type, data }: CardProps) {
   const [hover, setHover] = useState(false);
+  const router = useRouter();
 
+  const isTask = type === 'task';
+  const taskData = isTask ? (data as TaskData) : null;
+  const foodData = !isTask ? (data as FoodData) : null;
 
   return (
-    <div
-      className={`w-[320px] h-[320px] bg-white rounded-[32px] p-[3px] relative shadow-[0_70px_30px_-50px_#604b4a30] transition-all duration-500 ease-in-out border-4 border-green-500 ${
-        hover ? "rounded-tl-[55px]" : ""
-      }`}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-  
-      {/* Profile Picture */}
-      <div
-        className={`absolute top-[3px] left-[3px] transition-all duration-500 ease-in-out z-[1] overflow-hidden border-solid ${
-            hover
-            ? "w-[120px] h-[120px] top-[15px] left-[15px] border-[7px] rounded-full z-[3] border-[#A0C878] shadow-[0_5px_5px_rgba(96,75,74,0.19)]"
-            : "w-[calc(100%-6px)] h-[calc(100%-6px)] rounded-[29px] border-0"
-        }`}
-        >
-        <Image
-            src="/food.jpg"
-            alt="food"
-            fill
-            className={`object-cover transition-transform duration-700 ${
-            hover ? "scale-110 translate-y-[-10%]" : "scale-100"
-            }`}
-        />
-        </div>
+    <>
+      <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+      `}</style>
 
-
-      {/* Bottom Section */}
       <div
-        className={`absolute left-[3px] right-[3px] bottom-[3px] bg-gradient-to-br from-green-500 to-emerald-600 rounded-[29px] shadow-inner overflow-hidden z-[2] transition-all duration-500 ease-[cubic-bezier(0.645,0.045,0.355,1)] ${
-          hover ? "top-[15%] rounded-tl-[80px]" : "top-[75%]"
-        }`}
+        className="relative transition-all duration-500"
+        style={{
+          width: '300px',
+          height: '300px',
+          fontFamily: '"Press Start 2P", cursive',
+        }}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>
-        
-        <div className="absolute bottom-0 left-6 right-6 h-[200px] flex flex-col justify-between py-4">
-          <div className="space-y-2">
-            <span className="block text-white font-bold text-xl tracking-wide mt-2">Sandwich</span>
-            {/* <span className="block text-white/90 text-sm leading-relaxed">
-              Passionate designer crafting peaceful digital spaces.
-            </span> */}
+        {/* Main Card Container */}
+        <div
+          className="relative w-full h-full overflow-hidden transition-all duration-500"
+          style={{
+            backgroundColor: 'white',
+            border: '4px solid #2D3748',
+            borderTopLeftRadius: hover ? '50px' : '0px',
+            boxShadow: hover ? '8px 8px 0 rgba(0,0,0,0.25)' : '6px 6px 0 rgba(0,0,0,0.15)',
+          }}
+        >
+          {/* Icon/Image Section - Moves to top-left on hover */}
+          <div
+            className="absolute overflow-hidden transition-all duration-500 ease-in-out"
+            style={{
+              top: hover ? '16px' : '4px',
+              left: hover ? '16px' : '4px',
+              width: hover ? '100px' : 'calc(100% - 8px)',
+              height: hover ? '100px' : 'calc(100% - 8px)',
+              border: hover ? '4px solid #2D3748' : 'none',
+              borderRadius: hover ? '50%' : '0px',
+              background: isTask 
+                ? 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)'
+                : 'linear-gradient(135deg, #6BCF7F 0%, #4A90E2 100%)',
+              zIndex: hover ? 3 : 1,
+              boxShadow: hover ? '4px 4px 0 rgba(0,0,0,0.2)' : 'none',
+            }}
+          >
+            {/* Pixel Icon */}
+            <div 
+              className="absolute top-1/2 left-1/2 transition-all duration-500"
+              style={{
+                width: hover ? '60px' : '120px',
+                height: hover ? '60px' : '120px',
+                transform: 'translate(-50%, -50%)',
+                backgroundImage: isTask ? taskData?.icon : foodData?.icon,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                imageRendering: 'pixelated',
+              }}
+            />
           </div>
 
-          {/* Expandable Content */}
-          <div className={`space-y-3 transition-all duration-500 ${
-            hover ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-          }`}>
-            <div className="grid grid-cols-2 gap-3 text-white/80 text-xs">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                <span className="block font-medium text-white">Rating</span>
-                <span>4/5</span>
+          {/* Content Section - Expands on hover */}
+          <div
+            className="absolute transition-all duration-500 ease-in-out overflow-hidden"
+            style={{
+              left: '4px',
+              right: '4px',
+              bottom: '4px',
+              top: hover ? '16px' : '75%',
+              background: isTask 
+                ? 'linear-gradient(to bottom right, #FF8C42, #FFD93D)'
+                : 'linear-gradient(to bottom right, #6BCF7F, #4A90E2)',
+              border: '4px solid #2D3748',
+              borderTopLeftRadius: hover ? '80px' : '0px',
+              zIndex: 2,
+              boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1)',
+            }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+            
+            <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col justify-end h-full">
+              {/* Title */}
+              <div className="mb-3">
+                <h3
+                  className="text-white font-bold leading-tight"
+                  style={{
+                    fontSize: '14px',
+                    textShadow: '2px 2px 0 rgba(0,0,0,0.3)',
+                  }}
+                >
+                  {isTask ? taskData?.title : foodData?.name}
+                </h3>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                <span className="block font-medium text-white">Price</span>
-                <span>9.00</span>
+
+              {/* Info Grid - Shows on hover */}
+              <div
+                className="transition-all duration-500"
+                style={{
+                  opacity: hover ? 1 : 0,
+                  transform: hover ? 'translateY(0)' : 'translateY(10px)',
+                }}
+              >
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {isTask && taskData && (
+                    <>
+                      <div 
+                        className="p-2"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                          backdropFilter: 'blur(10px)',
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                        }}
+                      >
+                        <div className="flex items-center gap-1 mb-1">
+                          <DollarSign size={10} color="white" />
+                        </div>
+                        <span className="text-white text-[8px] block">
+                          {taskData.reward}
+                        </span>
+                      </div>
+                      <div 
+                        className="p-2"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                          backdropFilter: 'blur(10px)',
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                        }}
+                      >
+                        <div className="flex items-center gap-1 mb-1">
+                          <Clock size={10} color="white" />
+                        </div>
+                        <span className="text-white text-[8px] block">
+                          {taskData.duration}
+                        </span>
+                      </div>
+                    </>
+                  )}
+
+                  {!isTask && foodData && (
+                    <>
+                      <div 
+                        className="p-2"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                          backdropFilter: 'blur(10px)',
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                        }}
+                      >
+                        <span className="text-white text-[7px] block mb-1">PRICE</span>
+                        <span className="text-white text-[10px] font-bold block">
+                          ${foodData.price}
+                        </span>
+                      </div>
+                      <div 
+                        className="p-2"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                          backdropFilter: 'blur(10px)',
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                        }}
+                      >
+                        <div className="flex items-center gap-1 mb-1">
+                          <Star size={10} color="white" fill="white" />
+                        </div>
+                        <span className="text-white text-[8px] block">
+                          {foodData.rating}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Location & Button */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1 text-white/90">
+                  <MapPin size={12} />
+                  <span style={{ fontSize: '8px' }}>
+                    {isTask ? taskData?.location : foodData?.location}
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (isTask) {
+                      // router.push(`/task/${taskData?.id}`);
+                      router.push('/task')
+                    } else {
+                      // router.push(`/food/${foodData?.id}`);
+                      router.push('/food')
+                    }
+                  }}
+                  className="px-4 py-2 font-bold transition-all duration-300"
+                  style={{
+                    backgroundColor: hover ? '#FFD93D' : 'white',
+                    color: isTask ? '#FF8C42' : '#6BCF7F',
+                    border: '3px solid rgba(255, 255, 255, 0.5)',
+                    fontSize: '8px',
+                    boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
+                    transform: hover ? 'scale(1.05)' : 'scale(1)',
+                  }}
+                >
+                  {isTask ? 'VIEW' : 'BUY'}
+                </button>
               </div>
             </div>
-          </div>
-
-          {/* Bottom Actions */}
-          <div className="flex items-center justify-between mt-1">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 text-white/90">
-                <MapPin className="w-4 h-4" />
-                <span className="text-sm hover:text-white transition-colors cursor-pointer">
-                  Indonesia
-                </span>
-              </div>
-              <span className="text-white text-sm font-medium hover:text-green-200 transition-colors cursor-pointer">
-                Sandwich
-              </span>
-            </div>
-
-            <button 
-            // navigate(`/petdetail/${pet.id}`);
-            onClick={() => router.push("/petdetail")}
-            className={`bg-white text-green-600 px-5 py-3 rounded-full font-semibold transition-all duration-300 shadow-lg text-sm ${
-              hover 
-                ? "bg-yellow-200 text-green-800 transform scale-105 shadow-xl hover:shadow-2xl" 
-                : "hover:bg-green-50 hover:scale-105"
-            }`}>
-              Buy
-            </button>
           </div>
         </div>
-      </div>
 
-      {/* Floating Elements */}
-      <div className={`absolute top-4 left-4 w-3 h-3 bg-green-400 rounded-full transition-all duration-500 ${
-        hover ? "opacity-100 scale-100" : "opacity-0 scale-0"
-      }`}></div>
-      <div className={`absolute top-8 left-8 w-2 h-2 bg-emerald-300 rounded-full transition-all duration-700 delay-100 ${
-        hover ? "opacity-100 scale-100" : "opacity-0 scale-0"
-      }`}></div>
-    </div>
+        {/* Floating Pixel Decorations */}
+        <div
+          className="absolute transition-all duration-500"
+          style={{
+            top: '12px',
+            left: '12px',
+            width: '8px',
+            height: '8px',
+            backgroundColor: isTask ? '#FFD93D' : '#4A90E2',
+            opacity: hover ? 1 : 0,
+            transform: hover ? 'scale(1)' : 'scale(0)',
+          }}
+        />
+        <div
+          className="absolute transition-all duration-700"
+          style={{
+            top: '24px',
+            left: '24px',
+            width: '6px',
+            height: '6px',
+            backgroundColor: isTask ? '#FF8C42' : '#6BCF7F',
+            opacity: hover ? 1 : 0,
+            transform: hover ? 'scale(1)' : 'scale(0)',
+            transitionDelay: '100ms',
+          }}
+        />
+      </div>
+    </>
   );
 }
