@@ -3,318 +3,319 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import { FiChevronRight, FiClock, FiMapPin, FiDollarSign } from 'react-icons/fi'
+import { FiChevronRight} from 'react-icons/fi'
+// import { FiClock, FiMapPin, FiDollarSign } from 'react-icons/fi'
 import { useRouter } from 'next/navigation'
 import UnifiedCard from '../components/Card';
 
 // Type Definitions
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  categoryColor: string;
-  duration: string;
-  location: string;
-  reward: string;
-  icon: string;
-}
+// interface Task {
+//   id: number;
+//   title: string;
+//   description: string;
+//   category: string;
+//   categoryColor: string;
+//   duration: string;
+//   location: string;
+//   reward: string;
+//   icon: string;
+// }
 
-interface Food {
-  id: number;
-  name: string;
-  description: string;
-  restaurant: string;
-  price: string;
-  originalPrice?: string;
-  discount?: string;
-  rating: string;
-  icon: string;
-}
+// interface Food {
+//   id: number;
+//   name: string;
+//   description: string;
+//   restaurant: string;
+//   price: string;
+//   originalPrice?: string;
+//   discount?: string;
+//   rating: string;
+//   icon: string;
+// }
 
 // Dummy Task Card Component
-const TaskCard = ({ task }: { task: Task }) => {
-  return (
-    <div 
-      className="transition-all duration-150 overflow-hidden"
-      style={{
-        backgroundColor: 'white',
-        border: '4px solid #2D3748',
-        boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
-        imageRendering: 'pixelated',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translate(-3px, -3px)';
-        e.currentTarget.style.boxShadow = '9px 9px 0 rgba(0,0,0,0.2)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translate(0, 0)';
-        e.currentTarget.style.boxShadow = '6px 6px 0 rgba(0,0,0,0.15)';
-      }}
-    >
-      {/* Task Icon/Image */}
-      <div 
-        className="w-full h-48 flex items-center justify-center"
-        style={{
-          background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)',
-          borderBottom: '4px solid #2D3748',
-        }}
-      >
-        <div 
-          className="w-24 h-24"
-          style={{
-            backgroundImage: task.icon,
-            backgroundSize: 'contain',
-            imageRendering: 'pixelated',
-          }}
-        />
-      </div>
+// const TaskCard = ({ task }: { task: Task }) => {
+//   return (
+//     <div 
+//       className="transition-all duration-150 overflow-hidden"
+//       style={{
+//         backgroundColor: 'white',
+//         border: '4px solid #2D3748',
+//         boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
+//         imageRendering: 'pixelated',
+//       }}
+//       onMouseEnter={(e) => {
+//         e.currentTarget.style.transform = 'translate(-3px, -3px)';
+//         e.currentTarget.style.boxShadow = '9px 9px 0 rgba(0,0,0,0.2)';
+//       }}
+//       onMouseLeave={(e) => {
+//         e.currentTarget.style.transform = 'translate(0, 0)';
+//         e.currentTarget.style.boxShadow = '6px 6px 0 rgba(0,0,0,0.15)';
+//       }}
+//     >
+//       {/* Task Icon/Image */}
+//       <div 
+//         className="w-full h-48 flex items-center justify-center"
+//         style={{
+//           background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)',
+//           borderBottom: '4px solid #2D3748',
+//         }}
+//       >
+//         <div 
+//           className="w-24 h-24"
+//           style={{
+//             backgroundImage: task.icon,
+//             backgroundSize: 'contain',
+//             imageRendering: 'pixelated',
+//           }}
+//         />
+//       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        {/* Category Badge */}
-        <span 
-          className="inline-block px-3 py-1 mb-3"
-          style={{
-            backgroundColor: task.categoryColor,
-            color: 'white',
-            border: '2px solid #2D3748',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '7px',
-          }}
-        >
-          {task.category}
-        </span>
+//       {/* Content */}
+//       <div className="p-6">
+//         {/* Category Badge */}
+//         <span 
+//           className="inline-block px-3 py-1 mb-3"
+//           style={{
+//             backgroundColor: task.categoryColor,
+//             color: 'white',
+//             border: '2px solid #2D3748',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '7px',
+//           }}
+//         >
+//           {task.category}
+//         </span>
 
-        {/* Title */}
-        <h3 
-          className="font-bold mb-3"
-          style={{
-            color: '#2D3748',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '12px',
-            lineHeight: '1.6',
-          }}
-        >
-          {task.title}
-        </h3>
+//         {/* Title */}
+//         <h3 
+//           className="font-bold mb-3"
+//           style={{
+//             color: '#2D3748',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '12px',
+//             lineHeight: '1.6',
+//           }}
+//         >
+//           {task.title}
+//         </h3>
 
-        {/* Description */}
-        <p 
-          className="mb-4"
-          style={{
-            color: '#4A5568',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '8px',
-            lineHeight: '1.6',
-          }}
-        >
-          {task.description}
-        </p>
+//         {/* Description */}
+//         <p 
+//           className="mb-4"
+//           style={{
+//             color: '#4A5568',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '8px',
+//             lineHeight: '1.6',
+//           }}
+//         >
+//           {task.description}
+//         </p>
 
-        {/* Details */}
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2">
-            <FiClock style={{ color: '#4A90E2' }} size={14} />
-            <span style={{ fontSize: '8px', fontFamily: '"Press Start 2P", cursive', color: '#2D3748' }}>
-              {task.duration}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <FiMapPin style={{ color: '#6BCF7F' }} size={14} />
-            <span style={{ fontSize: '8px', fontFamily: '"Press Start 2P", cursive', color: '#2D3748' }}>
-              {task.location}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <FiDollarSign style={{ color: '#FFD93D' }} size={14} />
-            <span style={{ fontSize: '8px', fontFamily: '"Press Start 2P", cursive', color: '#2D3748' }}>
-              {task.reward}
-            </span>
-          </div>
-        </div>
+//         {/* Details */}
+//         <div className="space-y-2 mb-4">
+//           <div className="flex items-center gap-2">
+//             <FiClock style={{ color: '#4A90E2' }} size={14} />
+//             <span style={{ fontSize: '8px', fontFamily: '"Press Start 2P", cursive', color: '#2D3748' }}>
+//               {task.duration}
+//             </span>
+//           </div>
+//           <div className="flex items-center gap-2">
+//             <FiMapPin style={{ color: '#6BCF7F' }} size={14} />
+//             <span style={{ fontSize: '8px', fontFamily: '"Press Start 2P", cursive', color: '#2D3748' }}>
+//               {task.location}
+//             </span>
+//           </div>
+//           <div className="flex items-center gap-2">
+//             <FiDollarSign style={{ color: '#FFD93D' }} size={14} />
+//             <span style={{ fontSize: '8px', fontFamily: '"Press Start 2P", cursive', color: '#2D3748' }}>
+//               {task.reward}
+//             </span>
+//           </div>
+//         </div>
 
-        {/* Accept Button */}
-        <button 
-          className="w-full py-3 font-bold transition-all duration-150"
-          style={{
-            backgroundColor: '#FF8C42',
-            color: 'white',
-            border: '3px solid #E67A30',
-            boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '10px',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translate(2px, 2px)';
-            e.currentTarget.style.boxShadow = '2px 2px 0 rgba(0,0,0,0.2)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translate(0, 0)';
-            e.currentTarget.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.2)';
-          }}
-        >
-          ACCEPT TASK
-        </button>
-      </div>
-    </div>
-  );
-};
+//         {/* Accept Button */}
+//         <button 
+//           className="w-full py-3 font-bold transition-all duration-150"
+//           style={{
+//             backgroundColor: '#FF8C42',
+//             color: 'white',
+//             border: '3px solid #E67A30',
+//             boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '10px',
+//           }}
+//           onMouseEnter={(e) => {
+//             e.currentTarget.style.transform = 'translate(2px, 2px)';
+//             e.currentTarget.style.boxShadow = '2px 2px 0 rgba(0,0,0,0.2)';
+//           }}
+//           onMouseLeave={(e) => {
+//             e.currentTarget.style.transform = 'translate(0, 0)';
+//             e.currentTarget.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.2)';
+//           }}
+//         >
+//           ACCEPT TASK
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 
 // Dummy Food Card Component
-const FoodCard = ({ food }: { food: Food }) => {
-  return (
-    <div 
-      className="transition-all duration-150 overflow-hidden"
-      style={{
-        backgroundColor: 'white',
-        border: '4px solid #2D3748',
-        boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
-        imageRendering: 'pixelated',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translate(-3px, -3px)';
-        e.currentTarget.style.boxShadow = '9px 9px 0 rgba(0,0,0,0.2)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translate(0, 0)';
-        e.currentTarget.style.boxShadow = '6px 6px 0 rgba(0,0,0,0.15)';
-      }}
-    >
-      {/* Food Image */}
-      <div 
-        className="w-full h-48 flex items-center justify-center relative"
-        style={{
-          background: 'linear-gradient(135deg, #6BCF7F 0%, #4A90E2 100%)',
-          borderBottom: '4px solid #2D3748',
-        }}
-      >
-        <div 
-          className="w-24 h-24"
-          style={{
-            backgroundImage: food.icon,
-            backgroundSize: 'contain',
-            imageRendering: 'pixelated',
-          }}
-        />
-        {/* Discount Badge */}
-        {food.discount && (
-          <div 
-            className="absolute top-3 right-3 px-3 py-2"
-            style={{
-              backgroundColor: '#FF8C42',
-              color: 'white',
-              border: '3px solid #E67A30',
-              fontFamily: '"Press Start 2P", cursive',
-              fontSize: '10px',
-              boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
-            }}
-          >
-            -{food.discount}%
-          </div>
-        )}
-      </div>
+// const FoodCard = ({ food }: { food: Food }) => {
+//   return (
+//     <div 
+//       className="transition-all duration-150 overflow-hidden"
+//       style={{
+//         backgroundColor: 'white',
+//         border: '4px solid #2D3748',
+//         boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
+//         imageRendering: 'pixelated',
+//       }}
+//       onMouseEnter={(e) => {
+//         e.currentTarget.style.transform = 'translate(-3px, -3px)';
+//         e.currentTarget.style.boxShadow = '9px 9px 0 rgba(0,0,0,0.2)';
+//       }}
+//       onMouseLeave={(e) => {
+//         e.currentTarget.style.transform = 'translate(0, 0)';
+//         e.currentTarget.style.boxShadow = '6px 6px 0 rgba(0,0,0,0.15)';
+//       }}
+//     >
+//       {/* Food Image */}
+//       <div 
+//         className="w-full h-48 flex items-center justify-center relative"
+//         style={{
+//           background: 'linear-gradient(135deg, #6BCF7F 0%, #4A90E2 100%)',
+//           borderBottom: '4px solid #2D3748',
+//         }}
+//       >
+//         <div 
+//           className="w-24 h-24"
+//           style={{
+//             backgroundImage: food.icon,
+//             backgroundSize: 'contain',
+//             imageRendering: 'pixelated',
+//           }}
+//         />
+//         {/* Discount Badge */}
+//         {food.discount && (
+//           <div 
+//             className="absolute top-3 right-3 px-3 py-2"
+//             style={{
+//               backgroundColor: '#FF8C42',
+//               color: 'white',
+//               border: '3px solid #E67A30',
+//               fontFamily: '"Press Start 2P", cursive',
+//               fontSize: '10px',
+//               boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
+//             }}
+//           >
+//             -{food.discount}%
+//           </div>
+//         )}
+//       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        {/* Restaurant Name */}
-        <span 
-          className="inline-block mb-2"
-          style={{
-            color: '#4A90E2',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '8px',
-          }}
-        >
-          {food.restaurant}
-        </span>
+//       {/* Content */}
+//       <div className="p-6">
+//         {/* Restaurant Name */}
+//         <span 
+//           className="inline-block mb-2"
+//           style={{
+//             color: '#4A90E2',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '8px',
+//           }}
+//         >
+//           {food.restaurant}
+//         </span>
 
-        {/* Food Name */}
-        <h3 
-          className="font-bold mb-3"
-          style={{
-            color: '#2D3748',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '12px',
-            lineHeight: '1.6',
-          }}
-        >
-          {food.name}
-        </h3>
+//         {/* Food Name */}
+//         <h3 
+//           className="font-bold mb-3"
+//           style={{
+//             color: '#2D3748',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '12px',
+//             lineHeight: '1.6',
+//           }}
+//         >
+//           {food.name}
+//         </h3>
 
-        {/* Description */}
-        <p 
-          className="mb-4"
-          style={{
-            color: '#4A5568',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '8px',
-            lineHeight: '1.6',
-          }}
-        >
-          {food.description}
-        </p>
+//         {/* Description */}
+//         <p 
+//           className="mb-4"
+//           style={{
+//             color: '#4A5568',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '8px',
+//             lineHeight: '1.6',
+//           }}
+//         >
+//           {food.description}
+//         </p>
 
-        {/* Price Section */}
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            {food.originalPrice && (
-              <span 
-                className="line-through mr-2"
-                style={{
-                  color: '#A0AEC0',
-                  fontFamily: '"Press Start 2P", cursive',
-                  fontSize: '8px',
-                }}
-              >
-                ${food.originalPrice}
-              </span>
-            )}
-            <span 
-              style={{
-                color: '#6BCF7F',
-                fontFamily: '"Press Start 2P", cursive',
-                fontSize: '14px',
-                fontWeight: 'bold',
-              }}
-            >
-              ${food.price}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span style={{ color: '#FFD93D', fontSize: '12px' }}>⭐</span>
-            <span style={{ fontFamily: '"Press Start 2P", cursive', fontSize: '8px', color: '#2D3748' }}>
-              {food.rating}
-            </span>
-          </div>
-        </div>
+//         {/* Price Section */}
+//         <div className="flex items-center justify-between mb-4">
+//           <div>
+//             {food.originalPrice && (
+//               <span 
+//                 className="line-through mr-2"
+//                 style={{
+//                   color: '#A0AEC0',
+//                   fontFamily: '"Press Start 2P", cursive',
+//                   fontSize: '8px',
+//                 }}
+//               >
+//                 ${food.originalPrice}
+//               </span>
+//             )}
+//             <span 
+//               style={{
+//                 color: '#6BCF7F',
+//                 fontFamily: '"Press Start 2P", cursive',
+//                 fontSize: '14px',
+//                 fontWeight: 'bold',
+//               }}
+//             >
+//               ${food.price}
+//             </span>
+//           </div>
+//           <div className="flex items-center gap-1">
+//             <span style={{ color: '#FFD93D', fontSize: '12px' }}>⭐</span>
+//             <span style={{ fontFamily: '"Press Start 2P", cursive', fontSize: '8px', color: '#2D3748' }}>
+//               {food.rating}
+//             </span>
+//           </div>
+//         </div>
 
-        {/* Redeem Button */}
-        <button 
-          className="w-full py-3 font-bold transition-all duration-150"
-          style={{
-            backgroundColor: '#6BCF7F',
-            color: 'white',
-            border: '3px solid #54B868',
-            boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
-            fontFamily: '"Press Start 2P", cursive',
-            fontSize: '10px',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translate(2px, 2px)';
-            e.currentTarget.style.boxShadow = '2px 2px 0 rgba(0,0,0,0.2)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translate(0, 0)';
-            e.currentTarget.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.2)';
-          }}
-        >
-          REDEEM NOW
-        </button>
-      </div>
-    </div>
-  );
-};
+//         {/* Redeem Button */}
+//         <button 
+//           className="w-full py-3 font-bold transition-all duration-150"
+//           style={{
+//             backgroundColor: '#6BCF7F',
+//             color: 'white',
+//             border: '3px solid #54B868',
+//             boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
+//             fontFamily: '"Press Start 2P", cursive',
+//             fontSize: '10px',
+//           }}
+//           onMouseEnter={(e) => {
+//             e.currentTarget.style.transform = 'translate(2px, 2px)';
+//             e.currentTarget.style.boxShadow = '2px 2px 0 rgba(0,0,0,0.2)';
+//           }}
+//           onMouseLeave={(e) => {
+//             e.currentTarget.style.transform = 'translate(0, 0)';
+//             e.currentTarget.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.2)';
+//           }}
+//         >
+//           REDEEM NOW
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 
 const HomePage = () => {
   const router = useRouter();

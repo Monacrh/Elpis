@@ -32,7 +32,7 @@ export default function ProfilePage() {
   const userData = {
     name: "JOHN_DOE",
     email: "john@example.com",
-    points: 250,
+    // points: 250,
     joinDate: "JAN 2025",
     tasksCompleted: 12,
     foodRedeemed: 8,
@@ -171,7 +171,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Points Display */}
-              <div
+              {/* <div
                 className="text-center p-6"
                 style={{
                   backgroundColor: 'white',
@@ -186,7 +186,7 @@ export default function ProfilePage() {
                   </span>
                 </div>
                 <span style={{ fontSize: '8px', color: '#4A5568' }}>POINTS</span>
-              </div>
+              </div> */}
             </div>
 
             {/* Stats Grid */}
@@ -310,7 +310,7 @@ export default function ProfilePage() {
 
               {/* Post Task Button */}
               <button
-                onClick={() => router.push('/post-task')}
+                onClick={() => router.push('/post')}
                 className="w-full py-4 mb-6 font-bold transition-all duration-150 flex items-center justify-center gap-2"
                 style={{
                   backgroundColor: '#FFD93D',
@@ -433,7 +433,7 @@ export default function ProfilePage() {
 
               {/* Post Food Button */}
               <button
-                onClick={() => router.push('/post-food')}
+                onClick={() => router.push('/post')}
                 className="w-full py-4 mb-6 font-bold transition-all duration-150 flex items-center justify-center gap-2"
                 style={{
                   backgroundColor: '#4A90E2',

@@ -144,7 +144,7 @@ const Navbar = () => {
           {/* Right: Profile & Points with Pixel Style & Animation */}
           <div className="hidden md:flex flex-1 justify-end gap-4 items-center transition-all duration-500">
             {/* Points Display with Animation */}
-            <motion.div 
+            {/* <motion.div 
               className="flex items-center gap-2 transition-all duration-500"
               style={{
                 padding: isScrolled ? '8px 12px' : '10px 16px',
@@ -167,7 +167,7 @@ const Navbar = () => {
                 ⭐
               </motion.span>
               <span>250 PTS</span>
-            </motion.div>
+            </motion.div> */}
 
             {/* Profile Button with Animation */}
             <Link href="/profile">
@@ -245,7 +245,7 @@ const Navbar = () => {
             >
               <nav className="flex flex-col p-4">
                 {/* Points in mobile */}
-                <motion.div
+                {/* <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="px-4 py-3 mb-2 flex items-center gap-2"
@@ -259,7 +259,7 @@ const Navbar = () => {
                 >
                   <span style={{ fontSize: '16px' }}>⭐</span>
                   <span>250 POINTS</span>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Pixel Divider */}
                 <div 
