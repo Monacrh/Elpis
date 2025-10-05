@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { ArrowLeft, MapPin, Star, Clock, ShoppingCart, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Clock, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Image from 'next/image';
 
@@ -90,7 +90,7 @@ const ImageSlider = ({ images }: { images: string[] }) => {
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
-            className="flex-shrink-0"
+            className="flex-shrink-0 relative"
             style={{
               width: '80px',
               height: '80px',
@@ -98,15 +98,13 @@ const ImageSlider = ({ images }: { images: string[] }) => {
               opacity: current === idx ? 1 : 0.6,
             }}
           >
-           <div className="relative w-full h-full">
             <Image
               src={img}
               alt={`Thumb ${idx + 1}`}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, 200px"
+              sizes="80px"
             />
-          </div>
           </button>
         ))}
       </div>
@@ -123,10 +121,9 @@ export default function FoodDetailPage() {
 
   const handleRedeem = async () => {
     setIsRedeeming(true);
-    // API call here
     await new Promise(r => setTimeout(r, 1500));
     setIsRedeeming(false);
-    setShowModal(true); // Show modal
+    setShowModal(true);
   };
 
   const generateCode = () => {
@@ -147,15 +144,13 @@ export default function FoodDetailPage() {
     discount: "50",
     rating: "4.8",
     reviews: 127,
-    location: "JL. MERDEKA NO. 45",
-    distance: "1.5 KM AWAY",
-    availableUntil: "8:00 PM TODAY",
+    location: "JL. MERDEKA NO. 45, TASIKMALAYA",
+    distance: "1.5 KM",
+    availableUntil: "8:00 PM",
     category: "INDONESIAN",
     portions: 15,
     images: ['/food.jpg', '/food.jpg', '/food.jpg'],
   };
-
-  const pointsNeeded = Math.ceil(parseFloat(food.price) * quantity * 10);
 
   return (
     <>
@@ -188,9 +183,31 @@ export default function FoodDetailPage() {
           </button>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left: Images */}
-            <div>
+            {/* Left: Images + Location */}
+            <div className="space-y-6">
               <ImageSlider images={food.images} />
+              
+              {/* Location Card */}
+              <div style={{ backgroundColor: 'white', border: '4px solid #2D3748', boxShadow: '6px 6px 0 rgba(0,0,0,0.15)', padding: '20px' }}>
+                <div className="flex items-start gap-3 mb-4">
+                  <MapPin size={20} style={{ color: '#6BCF7F', flexShrink: 0 }} />
+                  <div>
+                    <h3 style={{ fontSize: '12px', color: '#2D3748', marginBottom: '8px', fontWeight: 'bold' }}>
+                      {food.restaurant}
+                    </h3>
+                    <p style={{ fontSize: '10px', color: '#4A5568', lineHeight: '1.6' }}>
+                      {food.location}
+                    </p>
+                    <div className="flex items-center gap-2 mt-3">
+                      <Star size={14} style={{ color: '#FFD93D', fill: '#FFD93D' }} />
+                      <span style={{ fontSize: '10px', color: '#2D3748' }}>{food.restaurantRating}</span>
+                      <span style={{ fontSize: '8px', color: '#6BCF7F', marginLeft: '8px' }}>
+                        {food.distance} AWAY
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Right: Info */}
@@ -245,16 +262,11 @@ export default function FoodDetailPage() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="p-4" style={{ backgroundColor: '#FFF8F0', border: '3px solid #6BCF7F' }}>
-                    <MapPin size={16} style={{ color: '#6BCF7F', marginBottom: '8px' }} />
-                    <span style={{ fontSize: '8px', color: '#4A5568', display: 'block', marginBottom: '4px' }}>DISTANCE</span>
-                    <span style={{ fontSize: '12px', color: '#2D3748', fontWeight: 'bold' }}>{food.distance}</span>
-                  </div>
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="p-4" style={{ backgroundColor: '#FFF8F0', border: '3px solid #FF8C42' }}>
                     <Clock size={16} style={{ color: '#FF8C42', marginBottom: '8px' }} />
                     <span style={{ fontSize: '8px', color: '#4A5568', display: 'block', marginBottom: '4px' }}>AVAILABLE</span>
-                    <span style={{ fontSize: '9px', color: '#2D3748', fontWeight: 'bold', lineHeight: '1.4' }}>{food.availableUntil}</span>
+                    <span style={{ fontSize: '10px', color: '#2D3748', fontWeight: 'bold', lineHeight: '1.4' }}>{food.availableUntil}</span>
                   </div>
                   <div className="p-4" style={{ backgroundColor: '#FFF8F0', border: '3px solid #4A90E2' }}>
                     <ShoppingCart size={16} style={{ color: '#4A90E2', marginBottom: '8px' }} />
@@ -266,22 +278,6 @@ export default function FoodDetailPage() {
                 <div>
                   <h2 style={{ fontSize: '12px', color: '#6BCF7F', marginBottom: '12px' }}>DESCRIPTION</h2>
                   <p style={{ fontSize: '10px', color: '#2D3748', lineHeight: '1.8' }}>{food.description}</p>
-                </div>
-              </div>
-
-              {/* Restaurant */}
-              <div style={{ backgroundColor: 'white', border: '4px solid #2D3748', boxShadow: '6px 6px 0 rgba(0,0,0,0.15)', padding: '24px' }}>
-                <h2 style={{ fontSize: '12px', color: '#4A90E2', marginBottom: '16px' }}>RESTAURANT</h2>
-                <div>
-                  <h3 style={{ fontSize: '14px', color: '#2D3748', marginBottom: '8px' }}>{food.restaurant}</h3>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Star size={14} style={{ color: '#FFD93D', fill: '#FFD93D' }} />
-                    <span style={{ fontSize: '10px', color: '#2D3748' }}>{food.restaurantRating}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} style={{ color: '#6BCF7F' }} />
-                    <span style={{ fontSize: '10px', color: '#4A5568' }}>{food.location}</span>
-                  </div>
                 </div>
               </div>
 
@@ -327,14 +323,6 @@ export default function FoodDetailPage() {
                   </div>
                 </div>
 
-                <div className="p-3 mb-4 flex items-center justify-between" style={{ backgroundColor: '#FFD93D', border: '3px solid #2D3748' }}>
-                  <span style={{ fontSize: '8px', color: '#2D3748' }}>POINTS NEEDED</span>
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: '12px' }}>⭐</span>
-                    <span style={{ fontSize: '14px', color: '#2D3748', fontWeight: 'bold' }}>{pointsNeeded}</span>
-                  </div>
-                </div>
-
                 <button
                   onClick={handleRedeem}
                   disabled={isRedeeming}
@@ -347,29 +335,29 @@ export default function FoodDetailPage() {
                     boxShadow: '5px 5px 0 rgba(0,0,0,0.25)',
                   }}
                 >
-                  {isRedeeming ? 'PROCESSING...' : 'REDEEM NOW'}
+                  {isRedeeming ? 'PROCESSING...' : 'BUY NOW'}
                 </button>
 
-                {/* Modal */}
-                <ConfirmationModal
-                  isOpen={showModal}
-                  onClose={() => setShowModal(false)}
-                  type="food"
-                  data={{
-                    name: "NASI GORENG",
-                    price: "$2.50",
-                    pickupCode: generateCode() // or from API
-                  }}
-                />
-
                 <p style={{ fontSize: '7px', color: 'white', textAlign: 'center', lineHeight: '1.6' }}>
-                  You will receive a pickup code after redeeming
+                  Pay cash when you pick up
                 </p>
               </div>
             </div>
           </div>
         </div>
       </main>
+
+      {/* Modal */}
+      <ConfirmationModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        type="food"
+        data={{
+          name: food.name,
+          price: `$${(parseFloat(food.price) * quantity).toFixed(2)}`,
+          pickupCode: generateCode()
+        }}
+      />
 
       <Footer />
     </>
