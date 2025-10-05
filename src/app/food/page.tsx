@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowLeft, MapPin, Star, Clock, ShoppingCart, ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
+import ConfirmationModal from '../components/ConfirmationModal';
+import Image from 'next/image';
 
 interface FoodDetail {
   id: number;
@@ -38,10 +40,12 @@ const ImageSlider = ({ images }: { images: string[] }) => {
       }}
     >
       <div className="relative aspect-square overflow-hidden">
-        <img
+        <Image
           src={images[current]}
           alt={`Food image ${current + 1}`}
-          className="w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
         />
         
         <button
@@ -94,7 +98,15 @@ const ImageSlider = ({ images }: { images: string[] }) => {
               opacity: current === idx ? 1 : 0.6,
             }}
           >
-            <img src={img} alt={`Thumb ${idx + 1}`} className="w-full h-full object-cover" />
+           <div className="relative w-full h-full">
+            <Image
+              src={img}
+              alt={`Thumb ${idx + 1}`}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 200px"
+            />
+          </div>
           </button>
         ))}
       </div>
@@ -107,6 +119,22 @@ export default function FoodDetailPage() {
   const params = useParams();
   const [quantity, setQuantity] = useState(1);
   const [isRedeeming, setIsRedeeming] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleRedeem = async () => {
+    setIsRedeeming(true);
+    // API call here
+    await new Promise(r => setTimeout(r, 1500));
+    setIsRedeeming(false);
+    setShowModal(true); // Show modal
+  };
+
+  const generateCode = () => {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    return Array.from({length: 6}, () => 
+      chars[Math.floor(Math.random() * chars.length)]
+    ).join('');
+  };
 
   const food: FoodDetail = {
     id: 1,
@@ -128,12 +156,6 @@ export default function FoodDetailPage() {
   };
 
   const pointsNeeded = Math.ceil(parseFloat(food.price) * quantity * 10);
-
-  const handleRedeem = async () => {
-    setIsRedeeming(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    router.push(`/food/${food.id}/confirm`);
-  };
 
   return (
     <>
@@ -327,6 +349,18 @@ export default function FoodDetailPage() {
                 >
                   {isRedeeming ? 'PROCESSING...' : 'REDEEM NOW'}
                 </button>
+
+                {/* Modal */}
+                <ConfirmationModal
+                  isOpen={showModal}
+                  onClose={() => setShowModal(false)}
+                  type="food"
+                  data={{
+                    name: "NASI GORENG",
+                    price: "$2.50",
+                    pickupCode: generateCode() // or from API
+                  }}
+                />
 
                 <p style={{ fontSize: '7px', color: 'white', textAlign: 'center', lineHeight: '1.6' }}>
                   You will receive a pickup code after redeeming

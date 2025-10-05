@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { ArrowLeft, Clock, MapPin, DollarSign, User, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import ConfirmationModal from '../components/ConfirmationModal';
+import Image from 'next/image';
 
 interface TaskDetail {
   id: number;
@@ -35,11 +37,13 @@ const ImageSlider = ({ images }: { images: string[] }) => {
       }}
     >
       <div className="relative aspect-square overflow-hidden">
-        <img
-          src={images[current]}
-          alt={`Task image ${current + 1}`}
-          className="w-full h-full object-cover"
-        />
+       <Image
+        src={images[current]}
+        alt={`Task image ${current + 1}`}
+        width={800}
+        height={600}
+        className="w-full h-full object-cover"
+      />
         
         <button
           onClick={() => setCurrent((current - 1 + images.length) % images.length)}
@@ -91,7 +95,13 @@ const ImageSlider = ({ images }: { images: string[] }) => {
               opacity: current === idx ? 1 : 0.6,
             }}
           >
-            <img src={img} alt={`Thumb ${idx + 1}`} className="w-full h-full object-cover" />
+            <Image
+              src={img}
+              alt={`Thumb ${idx + 1}`}
+              width={200}
+              height={200}
+              className="w-full h-full object-cover"
+            />
           </button>
         ))}
       </div>
@@ -103,6 +113,15 @@ export default function TaskDetailPage() {
   const router = useRouter();
   const params = useParams();
   const [isAccepting, setIsAccepting] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleAccept = async () => {
+    setIsAccepting(true);
+    // API call here
+    await new Promise(r => setTimeout(r, 1500));
+    setIsAccepting(false);
+    setShowModal(true); // Show modal
+  };
 
   const task: TaskDetail = {
     id: 1,
@@ -122,12 +141,6 @@ export default function TaskDetailPage() {
       "Available on weekends"
     ],
     images: ['/food.jpg', '/food.jpg', '/food.jpg'],
-  };
-
-  const handleAcceptTask = async () => {
-    setIsAccepting(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    router.push(`/task/${task.id}/confirm`);
   };
 
   return (
@@ -265,8 +278,7 @@ export default function TaskDetailPage() {
                   VIEW PROFILE
                 </button>
                 <button
-                  onClick={handleAcceptTask}
-                  disabled={isAccepting}
+                  onClick={handleAccept}
                   className="w-full py-4 font-bold transition-all duration-150"
                   style={{
                     backgroundColor: isAccepting ? '#A0AEC0' : '#FF8C42',
@@ -278,6 +290,16 @@ export default function TaskDetailPage() {
                 >
                   {isAccepting ? 'ACCEPTING...' : 'ACCEPT TASK'}
                 </button>
+                {/* Modal */}
+                <ConfirmationModal
+                  isOpen={showModal}
+                  onClose={() => setShowModal(false)}
+                  type="task"
+                  data={{
+                    title: "WALK DOG",
+                    reward: "100 PTS"
+                  }}
+                />
               </div>
             </div>
           </div>
