@@ -98,9 +98,17 @@ export default function FoodListingPage() {
           fontFamily: '"Press Start 2P", cursive',
         }}
       >
+
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="mb-8">
+          {/* Header with Pixel Border */}
+          <div 
+            className="mb-8 p-6"
+            style={{
+              backgroundColor: 'white',
+              border: '4px solid #2D3748',
+              boxShadow: '8px 8px 0 rgba(0,0,0,0.25)',
+            }}
+          >
             <h1
               style={{
                 fontSize: '32px',
@@ -121,15 +129,16 @@ export default function FoodListingPage() {
             </p>
           </div>
 
-          {/* Filters */}
+          {/* Filters with Gradient Background */}
           <div
             className="mb-8 p-6"
             style={{
               backgroundColor: 'white',
               border: '4px solid #2D3748',
-              boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
+              boxShadow: '8px 8px 0 rgba(0,0,0,0.25)',
             }}
           >
+
             {/* Search Bar */}
             <div className="mb-6">
               <label
@@ -138,9 +147,10 @@ export default function FoodListingPage() {
                   color: '#2D3748',
                   display: 'block',
                   marginBottom: '8px',
+                  fontWeight: 'bold',
                 }}
               >
-                SEARCH FOOD
+                🔍 SEARCH FOOD
               </label>
               <div className="relative">
                 <Search
@@ -162,87 +172,101 @@ export default function FoodListingPage() {
                   style={{
                     border: '3px solid #2D3748',
                     fontSize: '10px',
-                    backgroundColor: '#FFF8F0',
+                    backgroundColor: 'white',
                     outline: 'none',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.15)',
                   }}
                 />
               </div>
             </div>
 
-            {/* Category Filter */}
-            <div className="mb-6">
-              <label
-                style={{
-                  fontSize: '10px',
-                  color: '#2D3748',
-                  display: 'block',
-                  marginBottom: '8px',
-                }}
-              >
-                CATEGORY
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className="px-4 py-2 transition-all duration-150"
-                    style={{
-                      backgroundColor: selectedCategory === cat ? '#6BCF7F' : 'white',
-                      color: selectedCategory === cat ? 'white' : '#2D3748',
-                      border: '3px solid #2D3748',
-                      fontSize: '8px',
-                      boxShadow: selectedCategory === cat ? '3px 3px 0 rgba(0,0,0,0.2)' : 'none',
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
+            {/* Category & Sort in Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Category Dropdown */}
+              <div>
+                <label
+                  style={{
+                    fontSize: '10px',
+                    color: '#2D3748',
+                    display: 'block',
+                    marginBottom: '8px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  📂 CATEGORY
+                </label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-4 py-3"
+                  style={{
+                    border: '3px solid #2D3748',
+                    fontSize: '10px',
+                    backgroundColor: 'white',
+                    outline: 'none',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.15)',
+                  }}
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </div>
 
-            {/* Sort */}
-            <div>
-              <label
-                style={{
-                  fontSize: '10px',
-                  color: '#2D3748',
-                  display: 'block',
-                  marginBottom: '8px',
-                }}
-              >
-                SORT BY
-              </label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3"
-                style={{
-                  border: '3px solid #2D3748',
-                  fontSize: '10px',
-                  backgroundColor: '#FFF8F0',
-                  outline: 'none',
-                  minWidth: '200px',
-                }}
-              >
-                <option value="recent">MOST RECENT</option>
-                <option value="price-low">PRICE: LOW TO HIGH</option>
-                <option value="price-high">PRICE: HIGH TO LOW</option>
-                <option value="rating">HIGHEST RATED</option>
-                <option value="distance">NEAREST FIRST</option>
-              </select>
+              {/* Sort Dropdown */}
+              <div>
+                <label
+                  style={{
+                    fontSize: '10px',
+                    color: '#2D3748',
+                    display: 'block',
+                    marginBottom: '8px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  ⚡ SORT BY
+                </label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full px-4 py-3"
+                  style={{
+                    border: '3px solid #2D3748',
+                    fontSize: '10px',
+                    backgroundColor: 'white',
+                    outline: 'none',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.15)',
+                  }}
+                >
+                  <option value="recent">MOST RECENT</option>
+                  <option value="price-low">PRICE: LOW TO HIGH</option>
+                  <option value="price-high">PRICE: HIGH TO LOW</option>
+                  <option value="rating">HIGHEST RATED</option>
+                  <option value="distance">NEAREST FIRST</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* Results Count */}
-          <div className="mb-6">
+          {/* Results Count with Pixel Style */}
+          <div 
+            className="mb-6 inline-block px-4 py-2"
+            style={{
+              backgroundColor: '#FFD93D',
+              border: '3px solid #2D3748',
+              boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
+            }}
+          >
             <p
               style={{
                 fontSize: '10px',
-                color: '#4A5568',
+                color: '#2D3748',
+                fontWeight: 'bold',
               }}
             >
-              SHOWING {filteredFood.length} ITEMS
+              📊 SHOWING {filteredFood.length} ITEMS
             </p>
           </div>
 
@@ -253,7 +277,7 @@ export default function FoodListingPage() {
               style={{
                 backgroundColor: 'white',
                 border: '4px solid #2D3748',
-                boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
+                boxShadow: '8px 8px 0 rgba(0,0,0,0.25)',
               }}
             >
               <SlidersHorizontal size={48} style={{ color: '#A0AEC0', margin: '0 auto 16px' }} />

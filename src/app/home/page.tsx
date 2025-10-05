@@ -487,7 +487,9 @@ const HomePage = () => {
                 maxWidth: '600px',
               }}
             >
-              Find 1-hour tasks nearby or redeem food with your points
+              {/* Find 1-hour tasks nearby or redeem food with your points */}
+              I think a hero is an ordinary individual who finds strength
+              to persevere and endure in spite of overwhelming obstacles
             </p>
             <button 
               className="px-8 py-4 font-bold transition-all duration-150"
@@ -541,7 +543,7 @@ const HomePage = () => {
               </h2>
             </div>
             <button 
-              onClick={() => router.push("/tasks")}
+              onClick={() => router.push("/listtasks")}
               className="flex items-center gap-2 px-6 py-3 font-bold transition-all duration-150"
               style={{
                 backgroundColor: 'transparent',
@@ -680,7 +682,7 @@ const HomePage = () => {
               </h2>
             </div>
             <button 
-              onClick={() => router.push("/food")}
+              onClick={() => router.push("/listfoods")}
               className="flex items-center gap-2 px-6 py-3 font-bold transition-all duration-150"
               style={{
                 backgroundColor: 'transparent',
