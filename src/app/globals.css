@@ -25,4 +25,34 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* ===== Kustomisasi Scrollbar Gaya 2D Pixel ===== */
 
+/* Untuk browser berbasis WebKit (Chrome, Safari, Edge baru, Opera) */
+::-webkit-scrollbar {
+  width: 14px; /* Lebar yang sedikit lebih tebal untuk kesan 'blocky' */
+  height: 14px;
+}
+
+/* Bagian jalur (track) dari scrollbar */
+::-webkit-scrollbar-track {
+  background: #fff; /* Latar belakang gelap */
+  border: 2px solid #444; /* Border untuk mempertegas jalur */
+}
+
+/* Bagian gagang (thumb) yang bisa digeser */
+::-webkit-scrollbar-thumb {
+  background: #ffcc00; /* Warna kuning cerah seperti di game retro */
+  border-radius: 0; /* PENTING: Menghilangkan lengkungan agar kotak */
+  border: 2px solid #000; /* Border hitam tebal untuk gagang */
+}
+
+/* Saat cursor diarahkan ke gagang */
+::-webkit-scrollbar-thumb:hover {
+  background: #ffa500; /* Warna menjadi oranye saat di-hover */
+}
+
+/* Untuk Firefox */
+* {
+  scrollbar-width: auto; /* 'auto' lebih cocok untuk gaya blocky daripada 'thin' */
+  scrollbar-color: #ffcc00 #fff; /* Warna gagang dan warna jalur */
+}
