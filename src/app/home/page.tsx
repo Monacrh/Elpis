@@ -7,6 +7,7 @@ import { FiChevronRight} from 'react-icons/fi'
 // import { FiClock, FiMapPin, FiDollarSign } from 'react-icons/fi'
 import { useRouter } from 'next/navigation'
 import UnifiedCard from '../components/Card';
+import Image from 'next/image'
 
 // Type Definitions
 // interface Task {
@@ -433,20 +434,20 @@ const HomePage = () => {
       
       
       {/* Hero Section */}
-      <section className="relative w-full h-[600px]">
+      <section className="relative w-full h-screen overflow-hidden">
         <Navbar />
         {/* Option 1: Use GIF */}
-        {/* <Image
-          src="/hero-banner.gif"
+        <Image
+          src="/Japanese Wheat Field.gif"
           alt="Pixel Art Hero"
           fill
           className="object-cover"
           style={{ imageRendering: "pixelated" }}
           priority
-        /> */}
+        />
 
         {/* Option 2: Gradient Background (temporary) */}
-        <div 
+        {/* <div 
           className="absolute inset-0"
           style={{
             background: 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 50%, #4A90E2 100%)',
@@ -462,7 +463,7 @@ const HomePage = () => {
               backgroundSize: '8px 8px',
             }}
           />
-        </div>
+        </div> */}
 
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center px-8">

@@ -30,6 +30,7 @@ export default function LandingPage() {
             className="object-cover"
             style={{ imageRendering: "pixelated" }}
             priority
+            unoptimized
           />
           
           {/* Option 2: Temporary gradient with pixel effect */}
