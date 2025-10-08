@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
-import { FiChevronRight } from "react-icons/fi";
+// import { FiChevronRight } from "react-icons/fi";
 import Footer from "../components/Footer";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
