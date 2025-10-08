@@ -1,30 +1,15 @@
+'use client'
+
 import React, { useState } from "react";
 import { MapPin, Clock, DollarSign, Star } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Task, Food } from "../../types/types"; // Import tipe data baru
 
 type CardType = 'task' | 'food';
 
 interface CardProps {
   type: CardType;
-  data: TaskData | FoodData;
-}
-
-interface TaskData {
-  id: number;
-  title: string;
-  reward: string;
-  duration: string;
-  location: string;
-  icon: string;
-}
-
-interface FoodData {
-  id: number;
-  name: string;
-  price: string;
-  rating: string;
-  location: string;
-  icon: string;
+  data: Task | Food;
 }
 
 export default function UnifiedCard({ type, data }: CardProps) {
@@ -32,8 +17,8 @@ export default function UnifiedCard({ type, data }: CardProps) {
   const router = useRouter();
 
   const isTask = type === 'task';
-  const taskData = isTask ? (data as TaskData) : null;
-  const foodData = !isTask ? (data as FoodData) : null;
+  const taskData = isTask ? (data as Task) : null;
+  const foodData = !isTask ? (data as Food) : null;
 
   return (
     <>
@@ -216,12 +201,10 @@ export default function UnifiedCard({ type, data }: CardProps) {
 
                 <button
                   onClick={() => {
-                    if (isTask) {
-                      // router.push(`/task/${taskData?.id}`);
-                      router.push('/task')
-                    } else {
-                      // router.push(`/food/${foodData?.id}`);
-                      router.push('/food')
+                    if (isTask && taskData) {
+                      router.push(`/task/${taskData._id}`);
+                    } else if (foodData) {
+                      router.push(`/food/${foodData._id}`);
                     }
                   }}
                   className="px-4 py-2 font-bold transition-all duration-300"

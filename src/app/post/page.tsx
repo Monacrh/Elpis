@@ -10,6 +10,8 @@ export default function PostPage() {
   const router = useRouter();
   const [postType, setPostType] = useState<'task' | 'food' | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
 
   // Task form state
   const [taskTitle, setTaskTitle] = useState('');
@@ -50,15 +52,66 @@ export default function PostPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Redirect based on type
+    setError('');
+
+    let endpoint = '';
+    let payload = {};
+
     if (postType === 'task') {
-      router.push('/profile?tab=tasks&subtab=posted');
-    } else {
-      router.push('/profile?tab=food&subtab=posted');
+      endpoint = '/api/tasks';
+      payload = {
+        title: taskTitle,
+        description: taskDescription,
+        category: taskCategory,
+        duration: taskDuration,
+        reward: taskReward,
+        requirements: taskRequirements.filter(req => req.trim() !== ''), // Hanya kirim yang terisi
+        // Tambahkan properti lain yang mungkin Anda perlukan, seperti 'icon', 'location', dll.
+        icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect x='36' y='20' width='24' height='12' fill='%23FF8C42'/%3E%3Crect x='24' y='32' width='48' height='12' fill='%23FF8C42'/%3E%3Crect x='32' y='44' width='12' height='20' fill='%234A90E2'/%3E%3Crect x='52' y='44' width='12' height='20' fill='%234A90E2'/%3E%3Crect x='28' y='64' width='12' height='12' fill='%232D3748'/%3E%3Crect x='56' y='64' width='12' height='12' fill='%232D3748'/%3E%3C/svg%3E")`,
+        location: "1.0 KM AWAY"
+      };
+    } else if (postType === 'food') {
+      endpoint = '/api/food';
+      payload = {
+        name: foodName,
+        description: foodDescription,
+        restaurant: restaurant,
+        category: foodCategory,
+        price: foodPrice,
+        portions: foodPortions,
+        availableUntil: foodAvailableUntil,
+         // Tambahkan properti lain yang mungkin Anda perlukan
+        rating: "N/A",
+        icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect x='16' y='40' width='64' height='8' fill='%234A90E2'/%3E%3Crect x='20' y='48' width='56' height='24' fill='%23FFD93D'/%3E%3Crect x='32' y='32' width='32' height='8' fill='%23FF8C42'/%3E%3Crect x='36' y='24' width='24' height='8' fill='%23FF8C42'/%3E%3C/svg%3E")`,
+        location: "1.0 KM AWAY",
+      };
+    }
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Something went wrong');
+      }
+
+      // Redirect based on type
+      if (postType === 'task') {
+        router.push('/profile?tab=tasks&subtab=posted');
+      } else {
+        router.push('/profile?tab=food&subtab=posted');
+      }
+
+    } catch (err) {
+      setError('Failed to submit post. Please try again.');
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -588,7 +641,12 @@ export default function PostPage() {
                     </div>
                   </div>
                 </div>
-
+                 {/* Error Message */}
+                {error && (
+                    <div className="mb-4 p-3 text-center" style={{ backgroundColor: '#FF8C42', border: '3px solid #E67A30', color: 'white', fontSize: '10px' }}>
+                        {error}
+                    </div>
+                )}
                 {/* Submit Button */}
                 <button
                   type="submit"
