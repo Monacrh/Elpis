@@ -3,15 +3,18 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    console.log("✅ Connected to MongoDB:", process.env.MONGODB_URI ? "Yes" : "No");
     const client = await clientPromise;
-    const db = client.db("elpis_db"); // Ganti "elpis" dengan nama database Anda
+    const db = client.db("elpis_db");
+    
     const foods = await db.collection("foods").find({}).toArray();
-
+    
     return NextResponse.json({ foods });
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({ error: "Unable to fetch food items" }, { status: 500 });
+    console.error("Error fetching foods:", e);
+    return NextResponse.json(
+      { error: "Failed to fetch foods" },
+      { status: 500 }
+    );
   }
 }
 

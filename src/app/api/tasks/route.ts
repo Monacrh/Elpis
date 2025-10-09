@@ -3,15 +3,18 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    console.log("✅ Connected to MongoDB:", process.env.MONGODB_URI ? "Yes" : "No");
     const client = await clientPromise;
     const db = client.db("elpis_db");
+    
     const tasks = await db.collection("tasks").find({}).toArray();
-
+    
     return NextResponse.json({ tasks });
   } catch (e) {
-    console.error("❌ Error fetching all tasks:", e);
-    return NextResponse.json({ error: "Unable to fetch tasks" }, { status: 500 });
+    console.error("Error fetching tasks:", e);
+    return NextResponse.json(
+      { error: "Failed to fetch tasks" },
+      { status: 500 }
+    );
   }
 }
 
