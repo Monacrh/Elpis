@@ -4,13 +4,14 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await context.params; 
+    const { id } = params; // ❗Tidak perlu await
 
     const client = await clientPromise;
     const db = client.db("elpis_db");
+
     const food = await db.collection("foods").findOne({ _id: new ObjectId(id) });
 
     if (!food) {
@@ -19,7 +20,7 @@ export async function GET(
 
     return NextResponse.json({ food });
   } catch (e) {
-    console.error(e);
+    console.error("❌ Error fetching food:", e);
     return NextResponse.json(
       { error: "Unable to fetch food item" },
       { status: 500 }
