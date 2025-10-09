@@ -137,7 +137,7 @@ export default function FoodDetailPage() {
     const fetchFood = async () => {
       try {
         const foodId = params.id;
-        const response = await fetch(`/api/food/${foodId}`);
+        const response = await fetch(`/api/foods/${foodId}`);
         
         if (!response.ok) {
           throw new Error('Food item not found');

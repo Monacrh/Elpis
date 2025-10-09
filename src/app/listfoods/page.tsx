@@ -24,7 +24,7 @@ export default function FoodListingPage() {
     const fetchFoods = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch('/api/food');
+        const response = await fetch('/api/foods');
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }

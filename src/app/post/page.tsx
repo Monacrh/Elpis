@@ -159,7 +159,7 @@ export default function PostPage() {
         postedDate: new Date().toISOString(), // NEW: Auto-generated posted date
       };
     } else if (postType === 'food') {
-      endpoint = '/api/food';
+      endpoint = '/api/foods';
       payload = {
         name: foodName,
         description: foodDescription,

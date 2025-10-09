@@ -29,7 +29,7 @@ const HomePage = () => {
     // Fetch Food
     const fetchFoods = async () => {
       try {
-        const res = await fetch('/api/food');
+        const res = await fetch('/api/foods');
         const data = await res.json();
         setFoods(data.foods || []);
       } catch (error) {
