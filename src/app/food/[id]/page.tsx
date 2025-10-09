@@ -1,22 +1,21 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 import { ArrowLeft, MapPin, Star, Clock, ShoppingCart, ChevronLeft, ChevronRight } from 'lucide-react';
-import ConfirmationModal from '../components/ConfirmationModal';
+import ConfirmationModal from '../../components/ConfirmationModal';
 import Image from 'next/image';
 
 interface FoodDetail {
+  _id: string;
   id: number;
   name: string;
   description: string;
   restaurant: string;
   restaurantRating: string;
   price: string;
-  originalPrice?: string;
-  discount?: string;
   rating: string;
   reviews: number;
   location: string;
@@ -40,37 +39,47 @@ const ImageSlider = ({ images }: { images: string[] }) => {
       }}
     >
       <div className="relative aspect-square overflow-hidden">
-        <Image
-          src={images[current]}
-          alt={`Food image ${current + 1}`}
-          fill
-          className="object-cover"
-          priority
-        />
+        {images && images.length > 0 ? (
+          <Image
+            src={images[current]}
+            alt={`Food image ${current + 1}`}
+            fill
+            className="object-cover"
+            priority
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+            <span style={{ fontSize: '12px', color: '#4A5568' }}>NO IMAGE</span>
+          </div>
+        )}
         
-        <button
-          onClick={() => setCurrent((current - 1 + images.length) % images.length)}
-          className="absolute left-4 top-1/2 -translate-y-1/2 p-3 transition-all duration-150"
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: '3px solid #2D3748',
-            boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
-          }}
-        >
-          <ChevronLeft size={24} />
-        </button>
-        
-        <button
-          onClick={() => setCurrent((current + 1) % images.length)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-3 transition-all duration-150"
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            border: '3px solid #2D3748',
-            boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
-          }}
-        >
-          <ChevronRight size={24} />
-        </button>
+        {images && images.length > 1 && (
+          <>
+            <button
+              onClick={() => setCurrent((current - 1 + images.length) % images.length)}
+              className="absolute left-4 top-1/2 -translate-y-1/2 p-3 transition-all duration-150"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                border: '3px solid #2D3748',
+                boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
+              }}
+            >
+              <ChevronLeft size={24} />
+            </button>
+            
+            <button
+              onClick={() => setCurrent((current + 1) % images.length)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-3 transition-all duration-150"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                border: '3px solid #2D3748',
+                boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
+              }}
+            >
+              <ChevronRight size={24} />
+            </button>
+          </>
+        )}
 
         <div
           className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2"
@@ -81,33 +90,35 @@ const ImageSlider = ({ images }: { images: string[] }) => {
             fontSize: '10px',
           }}
         >
-          {current + 1} / {images.length}
+          {images ? `${current + 1} / ${images.length}` : '0 / 0'}
         </div>
       </div>
 
-      <div className="flex gap-2 p-4 overflow-x-auto" style={{ borderTop: '4px solid #2D3748', backgroundColor: '#FFF8F0' }}>
-        {images.map((img, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrent(idx)}
-            className="flex-shrink-0 relative"
-            style={{
-              width: '80px',
-              height: '80px',
-              border: current === idx ? '4px solid #6BCF7F' : '3px solid #2D3748',
-              opacity: current === idx ? 1 : 0.6,
-            }}
-          >
-            <Image
-              src={img}
-              alt={`Thumb ${idx + 1}`}
-              fill
-              className="object-cover"
-              sizes="80px"
-            />
-          </button>
-        ))}
-      </div>
+      {images && images.length > 1 && (
+        <div className="flex gap-2 p-4 overflow-x-auto" style={{ borderTop: '4px solid #2D3748', backgroundColor: '#FFF8F0' }}>
+          {images.map((img, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrent(idx)}
+              className="flex-shrink-0 relative"
+              style={{
+                width: '80px',
+                height: '80px',
+                border: current === idx ? '4px solid #6BCF7F' : '3px solid #2D3748',
+                opacity: current === idx ? 1 : 0.6,
+              }}
+            >
+              <Image
+                src={img}
+                alt={`Thumb ${idx + 1}`}
+                fill
+                className="object-cover"
+                sizes="80px"
+              />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -118,6 +129,34 @@ export default function FoodDetailPage() {
   const [quantity, setQuantity] = useState(1);
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [food, setFood] = useState<FoodDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchFood = async () => {
+      try {
+        const foodId = params.id;
+        const response = await fetch(`/api/food/${foodId}`);
+        
+        if (!response.ok) {
+          throw new Error('Food item not found');
+        }
+        
+        const data = await response.json();
+        setFood(data.food);
+      } catch (err) {
+        setError('Failed to load food item');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchFood();
+    }
+  }, [params.id]);
 
   const handleRedeem = async () => {
     setIsRedeeming(true);
@@ -133,24 +172,57 @@ export default function FoodDetailPage() {
     ).join('');
   };
 
-  const food: FoodDetail = {
-    id: 1,
-    name: "NASI GORENG SPECIAL",
-    description: "Authentic Indonesian fried rice with chicken, vegetables, fried egg, and prawn crackers. Freshly made with traditional spices. Perfect for lunch or dinner!",
-    restaurant: "WARUNG MAKAN SEJAHTERA",
-    restaurantRating: "4.9",
-    price: "2.5",
-    originalPrice: "5.0",
-    discount: "50",
-    rating: "4.8",
-    reviews: 127,
-    location: "JL. MERDEKA NO. 45, TASIKMALAYA",
-    distance: "1.5 KM",
-    availableUntil: "8:00 PM",
-    category: "INDONESIAN",
-    portions: 15,
-    images: ['/food.jpg', '/food.jpg', '/food.jpg'],
-  };
+  if (loading) {
+    return (
+      <>
+        <Navbar />
+        <main 
+          className="min-h-screen pt-24 px-6 pb-16"
+          style={{ 
+            backgroundColor: '#FFF8F0',
+            fontFamily: '"Press Start 2P", cursive',
+          }}
+        >
+          <div className="max-w-7xl mx-auto text-center">
+            <div style={{ fontSize: '16px', color: '#2D3748' }}>LOADING...</div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (error || !food) {
+    return (
+      <>
+        <Navbar />
+        <main 
+          className="min-h-screen pt-24 px-6 pb-16"
+          style={{ 
+            backgroundColor: '#FFF8F0',
+            fontFamily: '"Press Start 2P", cursive',
+          }}
+        >
+          <div className="max-w-7xl mx-auto text-center">
+            <div style={{ fontSize: '16px', color: '#FF8C42' }}>{error || 'Food item not found'}</div>
+            <button
+              onClick={() => router.back()}
+              className="mt-4 px-4 py-3 transition-all duration-150"
+              style={{
+                backgroundColor: 'white',
+                border: '3px solid #2D3748',
+                boxShadow: '4px 4px 0 rgba(0,0,0,0.15)',
+                fontSize: '10px',
+              }}
+            >
+              GO BACK
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -185,7 +257,7 @@ export default function FoodDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left: Images + Location */}
             <div className="space-y-6">
-              <ImageSlider images={food.images} />
+              <ImageSlider images={food.images || []} />
               
               {/* Location Card */}
               <div style={{ backgroundColor: 'white', border: '4px solid #2D3748', boxShadow: '6px 6px 0 rgba(0,0,0,0.15)', padding: '20px' }}>
@@ -199,10 +271,10 @@ export default function FoodDetailPage() {
                       {food.location}
                     </p>
                     <div className="flex items-center gap-2 mt-3">
-                      <Star size={14} style={{ color: '#FFD93D', fill: '#FFD93D' }} />
+                      {/* <Star size={14} style={{ color: '#FFD93D', fill: '#FFD93D' }} /> */}
                       <span style={{ fontSize: '10px', color: '#2D3748' }}>{food.restaurantRating}</span>
-                      <span style={{ fontSize: '8px', color: '#6BCF7F', marginLeft: '8px' }}>
-                        {food.distance} AWAY
+                      <span style={{ fontSize: '10px', color: '#6BCF7F', marginLeft: '8px' }}>
+                        {food.distance || "1.0 KM"} AWAY
                       </span>
                     </div>
                   </div>
@@ -225,38 +297,19 @@ export default function FoodDetailPage() {
                   {food.category}
                 </div>
 
-                {food.discount && (
-                  <div
-                    className="inline-block px-3 py-2 mb-4 ml-2"
-                    style={{
-                      backgroundColor: '#FF8C42',
-                      color: 'white',
-                      border: '2px solid #2D3748',
-                      fontSize: '10px',
-                    }}
-                  >
-                    -{food.discount}% OFF
-                  </div>
-                )}
-
                 <h1 style={{ fontSize: '24px', color: '#2D3748', marginBottom: '12px', lineHeight: '1.4' }}>
                   {food.name}
                 </h1>
 
-                <div className="flex items-center gap-4 mb-4">
+                {/* <div className="flex items-center gap-4 mb-4">
                   <div className="flex items-center gap-1">
                     <Star size={16} style={{ color: '#FFD93D', fill: '#FFD93D' }} />
-                    <span style={{ fontSize: '12px', color: '#2D3748' }}>{food.rating}</span>
-                    <span style={{ fontSize: '8px', color: '#4A5568' }}>({food.reviews})</span>
+                    <span style={{ fontSize: '12px', color: '#2D3748' }}>{food.rating || "4.9"}</span>
+                    <span style={{ fontSize: '8px', color: '#4A5568' }}>({food.reviews|| "100"})</span>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex items-center gap-2 mb-6">
-                  {food.originalPrice && (
-                    <span className="line-through" style={{ fontSize: '14px', color: '#A0AEC0' }}>
-                      ${food.originalPrice}
-                    </span>
-                  )}
                   <span style={{ fontSize: '32px', color: '#6BCF7F', fontWeight: 'bold' }}>
                     ${food.price}
                   </span>

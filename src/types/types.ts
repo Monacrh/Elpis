@@ -10,6 +10,7 @@ export interface Task {
   categoryColor: string;
   duration: string;
   location: string;
+  distance: string;
   reward: string;
   images: string;
 }
@@ -21,9 +22,8 @@ export interface Food {
   description: string;
   restaurant: string;
   price: string;
-  originalPrice?: string;
-  discount?: string;
   rating: string;
   images: string;
   location: string;
+  distance: string;
 }

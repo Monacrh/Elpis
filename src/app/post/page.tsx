@@ -19,6 +19,7 @@ export default function PostPage() {
   const [taskCategory, setTaskCategory] = useState('');
   const [taskDuration, setTaskDuration] = useState('');
   const [taskReward, setTaskReward] = useState('');
+  const [taskLocation, setTaskLocation] = useState(''); // NEW: Task location
   const [taskRequirements, setTaskRequirements] = useState<string[]>(['']);
 
   // Food form state
@@ -29,6 +30,7 @@ export default function PostPage() {
   const [foodPortions, setFoodPortions] = useState('');
   const [foodAvailableUntil, setFoodAvailableUntil] = useState('');
   const [restaurant, setRestaurant] = useState('');
+  const [foodLocation, setFoodLocation] = useState(''); // NEW: Food location
 
   // Images state
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -151,9 +153,10 @@ export default function PostPage() {
         category: taskCategory,
         duration: taskDuration,
         reward: taskReward,
+        location: taskLocation || "1.0 KM AWAY", // Default jika kosong
         requirements: taskRequirements.filter(req => req.trim() !== ''),
         images: imageUrls,
-        location: "1.0 KM AWAY"
+        postedDate: new Date().toISOString(), // NEW: Auto-generated posted date
       };
     } else if (postType === 'food') {
       endpoint = '/api/food';
@@ -165,9 +168,9 @@ export default function PostPage() {
         price: foodPrice,
         portions: foodPortions,
         availableUntil: foodAvailableUntil,
+        location: foodLocation || "1.0 KM AWAY", // Default jika kosong
         images: imageUrls,
         rating: "N/A",
-        location: "1.0 KM AWAY",
       };
     }
 
@@ -428,25 +431,45 @@ export default function PostPage() {
                         </div>
                       </div>
 
-                      <div className="mb-6">
-                        <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
-                          REWARD ($) *
-                        </label>
-                        <input
-                          type="number"
-                          value={taskReward}
-                          onChange={(e) => setTaskReward(e.target.value)}
-                          placeholder="E.G. 100"
-                          required
-                          min="1"
-                          className="w-full px-4 py-3"
-                          style={{
-                            border: '3px solid #2D3748',
-                            fontSize: '10px',
-                            backgroundColor: '#FFF8F0',
-                            outline: 'none',
-                          }}
-                        />
+                      <div className="grid grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
+                            REWARD ($) *
+                          </label>
+                          <input
+                            type="number"
+                            value={taskReward}
+                            onChange={(e) => setTaskReward(e.target.value)}
+                            placeholder="E.G. 100"
+                            required
+                            min="1"
+                            className="w-full px-4 py-3"
+                            style={{
+                              border: '3px solid #2D3748',
+                              fontSize: '10px',
+                              backgroundColor: '#FFF8F0',
+                              outline: 'none',
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
+                            LOCATION
+                          </label>
+                          <input
+                            type="text"
+                            value={taskLocation}
+                            onChange={(e) => setTaskLocation(e.target.value)}
+                            placeholder="E.G. JL. MERDEKA NO. 45"
+                            className="w-full px-4 py-3"
+                            style={{
+                              border: '3px solid #2D3748',
+                              fontSize: '10px',
+                              backgroundColor: '#FFF8F0',
+                              outline: 'none',
+                            }}
+                          />
+                        </div>
                       </div>
 
                       <div className="mb-6">
@@ -543,24 +566,44 @@ export default function PostPage() {
                         />
                       </div>
 
-                      <div className="mb-6">
-                        <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
-                          RESTAURANT NAME *
-                        </label>
-                        <input
-                          type="text"
-                          value={restaurant}
-                          onChange={(e) => setRestaurant(e.target.value)}
-                          placeholder="E.G. WARUNG MAKAN"
-                          required
-                          className="w-full px-4 py-3"
-                          style={{
-                            border: '3px solid #2D3748',
-                            fontSize: '10px',
-                            backgroundColor: '#FFF8F0',
-                            outline: 'none',
-                          }}
-                        />
+                      <div className="grid grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
+                            RESTAURANT NAME *
+                          </label>
+                          <input
+                            type="text"
+                            value={restaurant}
+                            onChange={(e) => setRestaurant(e.target.value)}
+                            placeholder="E.G. WARUNG MAKAN SEJAHTERA"
+                            required
+                            className="w-full px-4 py-3"
+                            style={{
+                              border: '3px solid #2D3748',
+                              fontSize: '10px',
+                              backgroundColor: '#FFF8F0',
+                              outline: 'none',
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
+                            LOCATION
+                          </label>
+                          <input
+                            type="text"
+                            value={foodLocation}
+                            onChange={(e) => setFoodLocation(e.target.value)}
+                            placeholder="E.G. JL. MERDEKA NO. 45, TASIKMALAYA"
+                            className="w-full px-4 py-3"
+                            style={{
+                              border: '3px solid #2D3748',
+                              fontSize: '10px',
+                              backgroundColor: '#FFF8F0',
+                              outline: 'none',
+                            }}
+                          />
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-6 mb-6">
@@ -653,7 +696,7 @@ export default function PostPage() {
                     </>
                   )}
 
-                  {/* Images Upload Section - FIXED */}
+                  {/* Images Upload Section */}
                   <div className="mb-6">
                     <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
                       IMAGES *

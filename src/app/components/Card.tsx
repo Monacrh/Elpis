@@ -18,6 +18,15 @@ export default function UnifiedCard({ type, data }: CardProps) {
   const taskData = isTask ? (data as Task) : null;
   const foodData = !isTask ? (data as Food) : null;
 
+  // Fungsi untuk handle klik card
+  const handleCardClick = () => {
+    if (isTask && taskData && taskData._id) {
+      router.push(`/task/${taskData._id}`);
+    } else if (foodData && foodData._id) {
+      router.push(`/food/${foodData._id}`);
+    }
+  };
+
   return (
     <>
       <style jsx>{`
@@ -25,7 +34,7 @@ export default function UnifiedCard({ type, data }: CardProps) {
       `}</style>
 
       <div
-        className="relative transition-all duration-300"
+        className="relative transition-all duration-300 cursor-pointer"
         style={{
           width: '320px',
           height: '320px',
@@ -33,6 +42,7 @@ export default function UnifiedCard({ type, data }: CardProps) {
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={handleCardClick} // Tambahkan onClick di sini
       >
         {/* Pixel Decorations */}
         {isHovered && (
@@ -91,12 +101,11 @@ export default function UnifiedCard({ type, data }: CardProps) {
               className="w-full h-full transition-all duration-400"
               style={{
                 backgroundImage: `url(${isTask ? taskData?.images?.[0] : foodData?.images?.[0]})`,
-                backgroundSize: isHovered ? 'cover' : 'cover',
+                backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
-                imageRendering: 'auto', // Menggunakan auto untuk kualitas HD
+                imageRendering: 'auto',
                 transform: isHovered ? 'scale(1.1)' : 'scale(1)',
-                filter: isHovered ? 'none' : 'none',
               }}
             />
           </div>
@@ -223,12 +232,9 @@ export default function UnifiedCard({ type, data }: CardProps) {
                 </div>
 
                 <button
-                  onClick={() => {
-                    if (isTask && taskData) {
-                      router.push(`/task/${taskData._id}`);
-                    } else if (foodData) {
-                      router.push(`/food/${foodData._id}`);
-                    }
+                  onClick={(e) => {
+                    e.stopPropagation(); // Mencegah event bubbling ke parent
+                    handleCardClick();
                   }}
                   className="px-4 py-2 font-bold transition-all duration-200"
                   style={{
