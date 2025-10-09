@@ -8,11 +8,14 @@ import { useRouter } from 'next/navigation'
 import UnifiedCard from '../components/Card';
 import Image from 'next/image'
 import { Task, Food } from '../../types/types' // Import tipe data baru
+import LoadingScreen from '../components/LoadingScreen'
 
 const HomePage = () => {
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [foods, setFoods] = useState<Food[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
 
   useEffect(() => {
     // Fetch Tasks
@@ -41,6 +44,37 @@ const HomePage = () => {
     fetchFoods();
   }, []);
 
+  useEffect(() => {
+    // Tunggu sampai semua assets dan page fully loaded
+    const handleLoad = () => {
+      setIsLoading(false);
+    };
+
+    // Jika page sudah loaded
+    if (document.readyState === 'complete') {
+      setIsLoading(false);
+    } else {
+      window.addEventListener('load', handleLoad);
+      
+      // Fallback timeout untuk safety
+      const timeoutId = setTimeout(() => {
+        setIsLoading(false);
+      }, 5000);
+
+      return () => {
+        window.removeEventListener('load', handleLoad);
+        clearTimeout(timeoutId);
+      };
+    }
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <LoadingScreen />
+      </div>
+    );
+  }
 
   return (
     <>

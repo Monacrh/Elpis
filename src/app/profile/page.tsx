@@ -30,13 +30,13 @@ export default function ProfilePage() {
 
   // Dummy user data
   const userData = {
-    name: "JOHN_DOE",
-    email: "john@example.com",
+    name: "Bryan Dhaniel",
+    email: "bryandhaniel@example.com",
     // points: 250,
     joinDate: "JAN 2025",
     tasksCompleted: 12,
     foodRedeemed: 8,
-    rating: "4.9",
+    // rating: "4.9",
   };
 
   // Dummy tasks data
@@ -160,13 +160,13 @@ export default function ProfilePage() {
                   <p style={{ fontSize: '10px', color: 'white', marginBottom: '12px' }}>
                     {userData.email}
                   </p>
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <span style={{ fontSize: '16px' }}>⭐</span>
                     <span style={{ fontSize: '14px', color: 'white', fontWeight: 'bold' }}>
                       {userData.rating}
                     </span>
                     <span style={{ fontSize: '8px', color: 'white' }}>RATING</span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
