@@ -4,16 +4,16 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     console.log("✅ MONGODB_URI:", process.env.MONGODB_URI);
-    const { id } = await context.params; 
+    console.log("🆔 Task ID:", params.id);
 
     const client = await clientPromise;
     const db = client.db("elpis_db");
 
-    const task = await db.collection("tasks").findOne({ _id: new ObjectId(id) });
+    const task = await db.collection("tasks").findOne({ _id: new ObjectId(params.id) });
 
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
@@ -21,7 +21,7 @@ export async function GET(
 
     return NextResponse.json({ task });
   } catch (e) {
-    console.error(e);
+    console.error("❌ Error in GET /api/task/[id]:", e);
     return NextResponse.json(
       { error: "Unable to fetch task" },
       { status: 500 }
