@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = params; // ❗Tidak perlu await
+    const { id } = params;
 
     const client = await clientPromise;
     const db = client.db("elpis_db");
