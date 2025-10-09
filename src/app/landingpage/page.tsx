@@ -145,7 +145,7 @@ export default function LandingPage() {
                 lineHeight: '1.8',
               }}
             >
-              HOPE THROUGH WORK
+              ONE SMALL STEP
             </h2>
             <p 
               className="text-base leading-loose mb-10 text-white max-w-2xl mx-auto"
@@ -156,9 +156,8 @@ export default function LandingPage() {
                 lineHeight: '2',
               }}
             >
-              One hour of work.<br/>
-              Endless hope.<br/>
-              Join the movement!
+              ONE SMALL STEP FROM ZERO.<br/>
+              ONE SMALL STEP TO HERO.<br/>
             </p>
             
             {/* Pixel CTA Buttons */}

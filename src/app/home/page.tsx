@@ -8,7 +8,6 @@ import { useRouter } from 'next/navigation'
 import UnifiedCard from '../components/Card';
 import Image from 'next/image'
 import { Task, Food } from '../../types/types' // Import tipe data baru
-import LoadingScreen from '../components/LoadingScreen'
 import LoadingScreenPixel from '../components/LoadingScreen'
 
 const HomePage = () => {
@@ -83,7 +82,8 @@ const HomePage = () => {
                 lineHeight: '1.4',
               }}
             >
-              WORK. EARN. HOPE.
+              ONE SMALL STEP FROM ZERO
+              ONE SMALL STEP TO HERO
             </h1>
             <p 
               className="text-white mb-8 mx-auto text-center"
@@ -95,7 +95,7 @@ const HomePage = () => {
                 maxWidth: '600px',
               }}
             >
-              I think a hero is an ordinary individual who finds strength
+              A hero is an ordinary individual who finds strength
               to persevere and endure in spite of overwhelming obstacles
             </p>
             <button 
