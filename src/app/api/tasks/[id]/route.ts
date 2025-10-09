@@ -4,12 +4,10 @@ import { NextResponse, NextRequest } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    console.log("✅ MONGODB_URI:", process.env.MONGODB_URI);
-
-    const { id } = params; // langsung dari params, bukan await
+    const { id } = await params; // Await the params
 
     const client = await clientPromise;
     const db = client.db("elpis_db");
@@ -22,7 +20,10 @@ export async function GET(
 
     return NextResponse.json({ task });
   } catch (e) {
-    console.error("❌ Error fetching task:", e);
-    return NextResponse.json({ error: "Unable to fetch task" }, { status: 500 });
+    console.error(e);
+    return NextResponse.json(
+      { error: "Unable to fetch task" },
+      { status: 500 }
+    );
   }
 }
