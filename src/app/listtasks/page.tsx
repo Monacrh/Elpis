@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import UnifiedCard from '../components/Card';
 import { Search, SlidersHorizontal, Loader } from 'lucide-react';
 import { Task } from '../../types/types'; // Pastikan path import ini benar
+import LoadingScreenPixel from '../components/LoadingScreen';
 
 export default function TaskListingPage() {
   // State untuk data, loading, dan error
@@ -45,6 +46,10 @@ export default function TaskListingPage() {
 
     fetchTasks();
   }, []); // Array kosong memastikan ini hanya berjalan sekali
+
+  if (isLoading) {
+    return <LoadingScreenPixel />;
+  }
 
   // Filter tugas berdasarkan pencarian dan kategori
   const filteredTasks = allTasks.filter(task => {

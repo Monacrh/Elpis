@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, LogOut, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const profileDropdownRef = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
   
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -16,22 +19,37 @@ const Navbar = () => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(false);
       }
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target as Node)) {
+        setProfileDropdownOpen(false);
+      }
     };
     
-    if (menuOpen) {
+    if (menuOpen || profileDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
     
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [menuOpen]);
+  }, [menuOpen, profileDropdownOpen]);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    // Implementasi logout logic di sini
+    // console.log("Logging out...");
+    // Contoh: Clear session/token
+    // localStorage.removeItem('token');
+    // sessionStorage.clear();
+    
+    // Redirect ke login page atau home
+    router.push('/');
+    setProfileDropdownOpen(false);
+  };
 
   // Navigation links data
   const navLinks = [
@@ -141,43 +159,18 @@ const Navbar = () => {
             })}
           </div>
 
-          {/* Right: Profile & Points with Pixel Style & Animation */}
+          {/* Right: Profile with Dropdown */}
           <div className="hidden md:flex flex-1 justify-end gap-4 items-center transition-all duration-500">
-            {/* Points Display with Animation */}
-            {/* <motion.div 
-              className="flex items-center gap-2 transition-all duration-500"
-              style={{
-                padding: isScrolled ? '8px 12px' : '10px 16px',
-                backgroundColor: '#FFD93D',
-                border: '3px solid #E5C22D',
-                color: '#2D3748',
-                fontSize: isScrolled ? '8px' : '10px',
-                boxShadow: isScrolled ? '4px 4px 0 rgba(0,0,0,0.2)' : '3px 3px 0 rgba(0,0,0,0.15)',
-                transform: isScrolled ? 'scale(0.95)' : 'scale(1)',
-              }}
-              animate={{
-                scale: isScrolled ? 0.95 : 1,
-              }}
-            >
-              <motion.span 
-                style={{ fontSize: isScrolled ? '12px' : '14px' }}
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              >
-                ⭐
-              </motion.span>
-              <span>250 PTS</span>
-            </motion.div> */}
-
-            {/* Profile Button with Animation */}
-            <Link href="/profile">
-              <motion.div
+            <div className="relative" ref={profileDropdownRef}>
+              {/* Profile Button with Animation */}
+              <motion.button
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="transition-all duration-500"
                 style={{
                   padding: isScrolled ? '10px' : '12px',
-                  backgroundColor: pathname === "/profile" ? '#4A90E2' : 'white',
+                  backgroundColor: profileDropdownOpen ? '#4A90E2' : 'white',
                   border: '3px solid #2D3748',
                   boxShadow: isScrolled ? '4px 4px 0 rgba(0,0,0,0.2)' : '3px 3px 0 rgba(0,0,0,0.15)',
                   transform: isScrolled ? 'scale(0.95)' : 'scale(1)',
@@ -188,11 +181,124 @@ const Navbar = () => {
                   style={{
                     width: isScrolled ? '18px' : '20px',
                     height: isScrolled ? '18px' : '20px',
-                    color: pathname === "/profile" ? 'white' : '#2D3748',
+                    color: profileDropdownOpen ? 'white' : '#2D3748',
                   }}
                 />
-              </motion.div>
-            </Link>
+              </motion.button>
+
+              {/* Dropdown Menu */}
+              <AnimatePresence>
+                {profileDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2"
+                    style={{
+                      width: '200px',
+                      backgroundColor: '#FFF8F0',
+                      border: '4px solid #2D3748',
+                      boxShadow: '6px 6px 0 rgba(0,0,0,0.25)',
+                    }}
+                  >
+                    <div className="p-2">
+                      {/* Profile Link */}
+                      <Link href="/profile" onClick={() => setProfileDropdownOpen(false)}>
+                        <motion.div
+                          whileHover={{ x: 3 }}
+                          className="flex items-center gap-3 px-4 py-3 mb-2 transition-all duration-150 cursor-pointer"
+                          style={{
+                            backgroundColor: pathname === "/profile" ? '#4A90E2' : 'transparent',
+                            color: pathname === "/profile" ? 'white' : '#2D3748',
+                            border: pathname === "/profile" ? '2px solid #3A7AC8' : '2px solid transparent',
+                            fontSize: '8px',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (pathname !== "/profile") {
+                              e.currentTarget.style.backgroundColor = '#E8F4F8';
+                              e.currentTarget.style.border = '2px solid #4A90E2';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (pathname !== "/profile") {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.border = '2px solid transparent';
+                            }
+                          }}
+                        >
+                          <User size={14} />
+                          <span>MY PROFILE</span>
+                        </motion.div>
+                      </Link>
+
+                      {/* Settings Link (Optional) */}
+                      {/* <Link href="/settings" onClick={() => setProfileDropdownOpen(false)}>
+                        <motion.div
+                          whileHover={{ x: 3 }}
+                          className="flex items-center gap-3 px-4 py-3 mb-2 transition-all duration-150 cursor-pointer"
+                          style={{
+                            backgroundColor: pathname === "/settings" ? '#4A90E2' : 'transparent',
+                            color: pathname === "/settings" ? 'white' : '#2D3748',
+                            border: pathname === "/settings" ? '2px solid #3A7AC8' : '2px solid transparent',
+                            fontSize: '8px',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (pathname !== "/settings") {
+                              e.currentTarget.style.backgroundColor = '#E8F4F8';
+                              e.currentTarget.style.border = '2px solid #4A90E2';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (pathname !== "/settings") {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.border = '2px solid transparent';
+                            }
+                          }}
+                        >
+                          <Settings size={14} />
+                          <span>SETTINGS</span>
+                        </motion.div>
+                      </Link> */}
+
+                      {/* Pixel Divider */}
+                      <div 
+                        className="my-2"
+                        style={{
+                          height: '3px',
+                          background: 'repeating-linear-gradient(90deg, #FF8C42 0px, #FF8C42 6px, transparent 6px, transparent 12px)',
+                        }}
+                      />
+
+                      {/* Logout Button */}
+                      <motion.button
+                        onClick={handleLogout}
+                        whileHover={{ x: 3 }}
+                        className="w-full flex items-center gap-3 px-4 py-3 transition-all duration-150"
+                        style={{
+                          backgroundColor: 'transparent',
+                          color: '#FF8C42',
+                          border: '2px solid transparent',
+                          fontSize: '8px',
+                          textAlign: 'left',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = '#FFF0E6';
+                          e.currentTarget.style.border = '2px solid #FF8C42';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.border = '2px solid transparent';
+                        }}
+                      >
+                        <LogOut size={14} />
+                        <span>LOGOUT</span>
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Hamburger Icon (Mobile) with Pixel Style */}
@@ -244,26 +350,9 @@ const Navbar = () => {
               }}
             >
               <nav className="flex flex-col p-4">
-                {/* Points in mobile */}
-                {/* <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="px-4 py-3 mb-2 flex items-center gap-2"
-                  style={{
-                    backgroundColor: '#FFD93D',
-                    border: '3px solid #E5C22D',
-                    color: '#2D3748',
-                    fontSize: '10px',
-                    boxShadow: '3px 3px 0 rgba(0,0,0,0.1)',
-                  }}
-                >
-                  <span style={{ fontSize: '16px' }}>⭐</span>
-                  <span>250 POINTS</span>
-                </motion.div> */}
-
                 {/* Pixel Divider */}
                 <div 
-                  className="my-2"
+                  className="mb-2"
                   style={{
                     height: '3px',
                     background: 'repeating-linear-gradient(90deg, #FF8C42 0px, #FF8C42 6px, transparent 6px, transparent 12px)',
@@ -280,7 +369,7 @@ const Navbar = () => {
                         opacity: 1, 
                         x: 0,
                         transition: { 
-                          delay: (index + 1) * 0.1,
+                          delay: index * 0.1,
                           duration: 0.3
                         }
                       }}
@@ -317,7 +406,41 @@ const Navbar = () => {
                   }}
                 />
 
-                {/* Profile link in mobile menu */}
+                {/* Settings link in mobile menu */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    x: 0,
+                    transition: { 
+                      delay: navLinks.length * 0.1,
+                      duration: 0.3
+                    }
+                  }}
+                  exit={{ opacity: 0, x: -20 }}
+                >
+                  {/* <Link 
+                    href="/settings" 
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    <div
+                      className="py-3 px-4 mb-2 flex items-center gap-3 transition-all duration-150"
+                      style={{
+                        backgroundColor: pathname === "/settings" ? '#4A90E2' : 'transparent',
+                        color: pathname === "/settings" ? 'white' : '#2D3748',
+                        border: pathname === "/settings" ? '3px solid #3A7AC8' : '3px solid transparent',
+                        fontSize: '10px',
+                        boxShadow: pathname === "/settings" ? '3px 3px 0 rgba(0,0,0,0.15)' : 'none',
+                      }}
+                    >
+                      {pathname === "/settings" && <span>▸</span>}
+                      <Settings className="w-4 h-4" />
+                      SETTINGS
+                    </div>
+                  </Link> */}
+                </motion.div>
+
+                {/* Logout button in mobile menu */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ 
@@ -330,25 +453,23 @@ const Navbar = () => {
                   }}
                   exit={{ opacity: 0, x: -20 }}
                 >
-                  <Link 
-                    href="/profile" 
-                    onClick={() => setMenuOpen(false)}
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMenuOpen(false);
+                    }}
+                    className="w-full py-3 px-4 flex items-center gap-3 transition-all duration-150"
+                    style={{
+                      backgroundColor: '#FF8C42',
+                      color: 'white',
+                      border: '3px solid #E67A30',
+                      fontSize: '10px',
+                      boxShadow: '3px 3px 0 rgba(0,0,0,0.15)',
+                    }}
                   >
-                    <div
-                      className="py-3 px-4 flex items-center gap-3 transition-all duration-150"
-                      style={{
-                        backgroundColor: pathname === "/profile" ? '#4A90E2' : 'transparent',
-                        color: pathname === "/profile" ? 'white' : '#2D3748',
-                        border: pathname === "/profile" ? '3px solid #3A7AC8' : '3px solid transparent',
-                        fontSize: '10px',
-                        boxShadow: pathname === "/profile" ? '3px 3px 0 rgba(0,0,0,0.15)' : 'none',
-                      }}
-                    >
-                      {pathname === "/profile" && <span>▸</span>}
-                      <User className="w-4 h-4" />
-                      PROFILE
-                    </div>
-                  </Link>
+                    <LogOut className="w-4 h-4" />
+                    LOGOUT
+                  </button>
                 </motion.div>
               </nav>
             </motion.div>

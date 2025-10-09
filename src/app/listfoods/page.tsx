@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import UnifiedCard from '../components/Card';
 import { Search, SlidersHorizontal, Loader } from 'lucide-react';
 import { Food } from '../../types/types'
+import LoadingScreenPixel from '../components/LoadingScreen';
 
 
 export default function FoodListingPage() {
@@ -44,6 +45,10 @@ export default function FoodListingPage() {
 
     fetchFoods();
   }, []); // Array kosong berarti useEffect hanya berjalan sekali saat komponen dimuat
+
+  if (isLoading) {
+    return <LoadingScreenPixel />;
+  }
 
   // Filter food based on search and category
   const filteredFood = allFood.filter(food => {
