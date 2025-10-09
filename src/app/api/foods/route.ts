@@ -3,16 +3,29 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    console.log("🔍 Starting foods API call...");
+    
     const client = await clientPromise;
+    console.log("✅ MongoDB connected");
+    
     const db = client.db("elpis_db");
+    console.log("✅ Database selected");
     
     const foods = await db.collection("foods").find({}).toArray();
+    console.log(`✅ Found ${foods.length} foods`);
     
     return NextResponse.json({ foods });
-  } catch (e) {
-    console.error("Error fetching foods:", e);
+  } catch (error) {
+    console.error("❌ Error in foods API:", error);
+    
+    // Type-safe error handling
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    
     return NextResponse.json(
-      { error: "Failed to fetch foods" },
+      { 
+        error: "Failed to fetch foods from database",
+        details: errorMessage 
+      },
       { status: 500 }
     );
   }
