@@ -1,6 +1,7 @@
 // src/components/Footer.tsx
 'use client'
 
+import Link from 'next/link';
 import React from 'react';
 
 const Footer = () => {
@@ -72,40 +73,40 @@ const Footer = () => {
               </h4>
               <ul className="space-y-4 text-gray-400">
                 <li>
-                  <a 
-                    href="/home" 
+                  <Link
+                    href="/home"
                     className="hover:text-white transition duration-200 flex items-center gap-2"
                     style={{ fontSize: '10px' }}
                   >
                     <span style={{ color: '#FF8C42' }}>▸</span> Home
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a 
-                    href="/tasks" 
+                  <Link
+                    href="/listtasks"
                     className="hover:text-white transition duration-200 flex items-center gap-2"
                     style={{ fontSize: '10px' }}
                   >
                     <span style={{ color: '#FF8C42' }}>▸</span> Find Tasks
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a 
-                    href="/food" 
+                  <Link
+                    href="/listfoods"
                     className="hover:text-white transition duration-200 flex items-center gap-2"
                     style={{ fontSize: '10px' }}
                   >
                     <span style={{ color: '#FF8C42' }}>▸</span> Food Partners
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a 
-                    href="/profile" 
+                  <Link
+                    href="/profile"
                     className="hover:text-white transition duration-200 flex items-center gap-2"
                     style={{ fontSize: '10px' }}
                   >
                     <span style={{ color: '#FF8C42' }}>▸</span> Profile
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
