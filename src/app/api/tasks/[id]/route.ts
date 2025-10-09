@@ -7,6 +7,7 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
+    console.log("✅ MONGODB_URI:", process.env.MONGODB_URI);
     const { id } = await context.params; 
 
     const client = await clientPromise;
