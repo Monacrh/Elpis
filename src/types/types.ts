@@ -11,7 +11,7 @@ export interface Task {
   duration: string;
   location: string;
   reward: string;
-  icon: string;
+  images: string;
 }
 
 export interface Food {
@@ -24,6 +24,6 @@ export interface Food {
   originalPrice?: string;
   discount?: string;
   rating: string;
-  icon: string;
+  images: string;
   location: string;
 }

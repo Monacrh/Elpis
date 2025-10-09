@@ -131,7 +131,7 @@ export default function TaskDetailPage() {
     categoryColor: "#FF8C42",
     duration: "1 HOUR",
     location: "2.3 KM AWAY",
-    reward: "100 POINTS",
+    reward: "100 $",
     poster: "JOHN_DOE",
     posterRating: "4.9",
     postedDate: "2 HOURS AGO",

@@ -1,85 +1,56 @@
 'use client'
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import UnifiedCard from '../components/Card';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, Loader } from 'lucide-react';
+import { Food } from '../../types/types'
 
-interface FoodData {
-  id: number;
-  name: string;
-  price: string;
-  rating: string;
-  location: string;
-  icon: string;
-}
 
 export default function FoodListingPage() {
-  const router = useRouter();
+  const [allFood, setAllFood] = useState<Food[]>([]); // State untuk menyimpan data dari API
+  const [isLoading, setIsLoading] = useState(true); // State untuk loading
+  const [error, setError] = useState<string | null>(null); // State untuk error
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [sortBy, setSortBy] = useState('recent');
 
   const categories = ['ALL', 'INDONESIAN', 'WESTERN', 'ASIAN', 'BAKERY', 'DESSERT'];
 
-  // Dummy food data
-  const allFood: FoodData[] = [
-    {
-      id: 1,
-      name: "NASI GORENG",
-      price: "2.5",
-      rating: "4.8",
-      location: "1.5 KM",
-      icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect x='16' y='40' width='64' height='8' fill='%23fff'/%3E%3Crect x='20' y='48' width='56' height='24' fill='%23fff'/%3E%3C/svg%3E")`,
-    },
-    {
-      id: 2,
-      name: "PIZZA SLICE",
-      price: "3.0",
-      rating: "4.9",
-      location: "2.0 KM",
-      icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cpath d='M 8 72 L 48 16 L 88 72 Z' fill='%23fff'/%3E%3C/svg%3E")`,
-    },
-    {
-      id: 3,
-      name: "BREAD PACK",
-      price: "1.5",
-      rating: "4.7",
-      location: "1.0 KM",
-      icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cellipse cx='48' cy='48' rx='32' ry='20' fill='%23fff'/%3E%3C/svg%3E")`,
-    },
-    {
-      id: 4,
-      name: "FRUIT BOX",
-      price: "4.0",
-      rating: "5.0",
-      location: "2.5 KM",
-      icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Ccircle cx='36' cy='40' r='16' fill='%23fff'/%3E%3Ccircle cx='60' cy='44' r='14' fill='%23fff'/%3E%3C/svg%3E")`,
-    },
-    {
-      id: 5,
-      name: "BURGER SET",
-      price: "3.5",
-      rating: "4.6",
-      location: "1.8 KM",
-      icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect x='20' y='32' width='56' height='32' fill='%23fff'/%3E%3C/svg%3E")`,
-    },
-    {
-      id: 6,
-      name: "SUSHI ROLL",
-      price: "5.0",
-      rating: "4.9",
-      location: "3.2 KM",
-      icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Ccircle cx='48' cy='48' r='24' fill='%23fff'/%3E%3C/svg%3E")`,
-    },
-  ];
+  // Fungsi untuk mengambil data makanan dari API
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/food');
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data = await response.json();
+        setAllFood(data.foods);
+        setError(null);
+      } catch (e) {
+        if (e instanceof Error) {
+            setError(e.message);
+        } else {
+            setError("An unknown error occurred");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFoods();
+  }, []); // Array kosong berarti useEffect hanya berjalan sekali saat komponen dimuat
 
   // Filter food based on search and category
   const filteredFood = allFood.filter(food => {
     const matchesSearch = food.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'ALL' || food.name.includes(selectedCategory);
+    // Logika kategori perlu disesuaikan jika Anda memiliki data kategori di database
+    // Untuk saat ini, logika filter kategori dummy dipertahankan
+    const matchesCategory = selectedCategory === 'ALL' || food.name.toLowerCase().includes(selectedCategory.toLowerCase());
     return matchesSearch && matchesCategory;
   });
 
@@ -100,7 +71,7 @@ export default function FoodListingPage() {
       >
 
         <div className="max-w-7xl mx-auto">
-          {/* Header with Pixel Border */}
+          {/* Header */}
           <div 
             className="mb-8 p-6"
             style={{
@@ -109,27 +80,15 @@ export default function FoodListingPage() {
               boxShadow: '8px 8px 0 rgba(0,0,0,0.25)',
             }}
           >
-            <h1
-              style={{
-                fontSize: '32px',
-                color: '#2D3748',
-                marginBottom: '12px',
-              }}
-            >
+            <h1 style={{ fontSize: '32px', color: '#2D3748', marginBottom: '12px' }}>
               AVAILABLE FOOD
             </h1>
-            <p
-              style={{
-                fontSize: '12px',
-                color: '#4A5568',
-                lineHeight: '1.8',
-              }}
-            >
+            <p style={{ fontSize: '12px', color: '#4A5568', lineHeight: '1.8' }}>
               Redeem food with your points and reduce waste
             </p>
           </div>
 
-          {/* Filters with Gradient Background */}
+          {/* Filters */}
           <div
             className="mb-8 p-6"
             style={{
@@ -138,74 +97,36 @@ export default function FoodListingPage() {
               boxShadow: '8px 8px 0 rgba(0,0,0,0.25)',
             }}
           >
-
             {/* Search Bar */}
             <div className="mb-6">
-              <label
-                style={{
-                  fontSize: '10px',
-                  color: '#2D3748',
-                  display: 'block',
-                  marginBottom: '8px',
-                  fontWeight: 'bold',
-                }}
-              >
-                🔍 SEARCH FOOD
+              <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                剥 SEARCH FOOD
               </label>
               <div className="relative">
-                <Search
-                  size={16}
-                  style={{
-                    position: 'absolute',
-                    left: '16px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#4A5568',
-                  }}
-                />
+                <Search size={16} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#4A5568' }}/>
                 <input
                   type="text"
                   placeholder="SEARCH BY NAME..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full py-3 pl-12 pr-4"
-                  style={{
-                    border: '3px solid #2D3748',
-                    fontSize: '10px',
-                    backgroundColor: 'white',
-                    outline: 'none',
-                    boxShadow: '4px 4px 0 rgba(0,0,0,0.15)',
-                  }}
+                  style={{ border: '3px solid #2D3748', fontSize: '10px', backgroundColor: 'white', outline: 'none', boxShadow: '4px 4px 0 rgba(0,0,0,0.15)' }}
                 />
               </div>
             </div>
 
-            {/* Category & Sort in Grid */}
+            {/* Category & Sort Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Category Dropdown */}
               <div>
-                <label
-                  style={{
-                    fontSize: '10px',
-                    color: '#2D3748',
-                    display: 'block',
-                    marginBottom: '8px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  📂 CATEGORY
+                <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                  唐 CATEGORY
                 </label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="w-full px-4 py-3"
-                  style={{
-                    border: '3px solid #2D3748',
-                    fontSize: '10px',
-                    backgroundColor: 'white',
-                    outline: 'none',
-                    boxShadow: '4px 4px 0 rgba(0,0,0,0.15)',
-                  }}
+                  style={{ border: '3px solid #2D3748', fontSize: '10px', backgroundColor: 'white', outline: 'none', boxShadow: '4px 4px 0 rgba(0,0,0,0.15)' }}
                 >
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
@@ -217,28 +138,14 @@ export default function FoodListingPage() {
 
               {/* Sort Dropdown */}
               <div>
-                <label
-                  style={{
-                    fontSize: '10px',
-                    color: '#2D3748',
-                    display: 'block',
-                    marginBottom: '8px',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  ⚡ SORT BY
+                <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
+                  笞｡ SORT BY
                 </label>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="w-full px-4 py-3"
-                  style={{
-                    border: '3px solid #2D3748',
-                    fontSize: '10px',
-                    backgroundColor: 'white',
-                    outline: 'none',
-                    boxShadow: '4px 4px 0 rgba(0,0,0,0.15)',
-                  }}
+                  style={{ border: '3px solid #2D3748', fontSize: '10px', backgroundColor: 'white', outline: 'none', boxShadow: '4px 4px 0 rgba(0,0,0,0.15)' }}
                 >
                   <option value="recent">MOST RECENT</option>
                   <option value="price-low">PRICE: LOW TO HIGH</option>
@@ -250,36 +157,25 @@ export default function FoodListingPage() {
             </div>
           </div>
 
-          {/* Results Count with Pixel Style */}
-          <div 
-            className="mb-6 inline-block px-4 py-2"
-            style={{
-              backgroundColor: '#FFD93D',
-              border: '3px solid #2D3748',
-              boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
-            }}
-          >
-            <p
-              style={{
-                fontSize: '10px',
-                color: '#2D3748',
-                fontWeight: 'bold',
-              }}
-            >
-              📊 SHOWING {filteredFood.length} ITEMS
+          {/* Results Count */}
+          <div className="mb-6 inline-block px-4 py-2" style={{ backgroundColor: '#FFD93D', border: '3px solid #2D3748', boxShadow: '4px 4px 0 rgba(0,0,0,0.2)' }}>
+            <p style={{ fontSize: '10px', color: '#2D3748', fontWeight: 'bold' }}>
+              {!isLoading && `投 SHOWING ${filteredFood.length} ITEMS`}
             </p>
           </div>
 
           {/* Food Grid */}
-          {filteredFood.length === 0 ? (
-            <div
-              className="p-12 text-center"
-              style={{
-                backgroundColor: 'white',
-                border: '4px solid #2D3748',
-                boxShadow: '8px 8px 0 rgba(0,0,0,0.25)',
-              }}
-            >
+          {isLoading ? (
+             <div className="p-12 text-center" style={{ backgroundColor: 'white', border: '4px solid #2D3748', boxShadow: '8px 8px 0 rgba(0,0,0,0.25)' }}>
+                <Loader size={48} className="animate-spin" style={{ color: '#A0AEC0', margin: '0 auto 16px' }} />
+                <p style={{ fontSize: '12px', color: '#4A5568' }}>LOADING FOOD...</p>
+             </div>
+          ) : error ? (
+            <div className="p-12 text-center" style={{ backgroundColor: 'white', border: '4px solid #2D3748', boxShadow: '8px 8px 0 rgba(0,0,0,0.25)', color: '#E53E3E' }}>
+                <p style={{ fontSize: '12px' }}>ERROR: {error}</p>
+             </div>
+          ) : filteredFood.length === 0 ? (
+            <div className="p-12 text-center" style={{ backgroundColor: 'white', border: '4px solid #2D3748', boxShadow: '8px 8px 0 rgba(0,0,0,0.25)' }}>
               <SlidersHorizontal size={48} style={{ color: '#A0AEC0', margin: '0 auto 16px' }} />
               <p style={{ fontSize: '12px', color: '#4A5568' }}>NO FOOD FOUND</p>
               <p style={{ fontSize: '8px', color: '#A0AEC0', marginTop: '8px' }}>
@@ -289,7 +185,8 @@ export default function FoodListingPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {filteredFood.map((food) => (
-                <UnifiedCard key={food.id} type="food" data={food} />
+                // Menggunakan _id dari MongoDB sebagai key
+                <UnifiedCard key={food._id.toString()} type="food" data={food} />
               ))}
             </div>
           )}

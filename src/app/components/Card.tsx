@@ -1,9 +1,7 @@
-'use client'
-
-import React, { useState } from "react";
-import { MapPin, Clock, DollarSign, Star } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Task, Food } from "../../types/types"; // Import tipe data baru
+import React, { useState } from 'react';
+import { MapPin, Clock, DollarSign, Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Task, Food } from '../../types/types';
 
 type CardType = 'task' | 'food';
 
@@ -13,7 +11,7 @@ interface CardProps {
 }
 
 export default function UnifiedCard({ type, data }: CardProps) {
-  const [hover, setHover] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
 
   const isTask = type === 'task';
@@ -27,84 +25,108 @@ export default function UnifiedCard({ type, data }: CardProps) {
       `}</style>
 
       <div
-        className="relative transition-all duration-500"
+        className="relative transition-all duration-300"
         style={{
-          width: '300px',
-          height: '300px',
+          width: '320px',
+          height: '320px',
           fontFamily: '"Press Start 2P", cursive',
         }}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Main Card Container */}
+        {/* Pixel Decorations */}
+        {isHovered && (
+          <>
+            <div
+              className="absolute transition-all duration-300"
+              style={{
+                top: '12px',
+                right: '60px',
+                width: '10px',
+                height: '10px',
+                background: isTask ? '#FFD93D' : '#4A90E2',
+              }}
+            />
+            <div
+              className="absolute transition-all duration-300"
+              style={{
+                top: '20px',
+                left: '12px',
+                width: '10px',
+                height: '10px',
+                background: isTask ? '#FF8C42' : '#6BCF7F',
+              }}
+            />
+          </>
+        )}
+
+        {/* Main Card */}
         <div
-          className="relative w-full h-full overflow-hidden transition-all duration-500"
+          className="relative w-full h-full transition-all duration-300"
           style={{
-            backgroundColor: 'white',
+            background: '#FFF8F0',
             border: '4px solid #2D3748',
-            borderTopLeftRadius: hover ? '50px' : '0px',
-            boxShadow: hover ? '8px 8px 0 rgba(0,0,0,0.25)' : '6px 6px 0 rgba(0,0,0,0.15)',
+            boxShadow: isHovered ? '12px 12px 0 rgba(0,0,0,0.3)' : '8px 8px 0 rgba(0,0,0,0.25)',
+            transform: isHovered ? 'translate(-2px, -2px)' : 'translate(0, 0)',
           }}
         >
-          {/* Icon/Image Section - Moves to top-left on hover */}
+          {/* Image/Icon Area */}
           <div
-            className="absolute overflow-hidden transition-all duration-500 ease-in-out"
+            className="absolute transition-all duration-400 overflow-hidden"
             style={{
-              top: hover ? '16px' : '4px',
-              left: hover ? '16px' : '4px',
-              width: hover ? '100px' : 'calc(100% - 8px)',
-              height: hover ? '100px' : 'calc(100% - 8px)',
-              border: hover ? '4px solid #2D3748' : 'none',
-              borderRadius: hover ? '50%' : '0px',
+              width: isHovered ? '100px' : 'calc(100% - 8px)',
+              height: isHovered ? '100px' : 'calc(100% - 8px)',
+              top: isHovered ? '16px' : '4px',
+              left: isHovered ? '16px' : '4px',
+              border: isHovered ? '4px solid #2D3748' : 'none',
               background: isTask 
                 ? 'linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%)'
                 : 'linear-gradient(135deg, #6BCF7F 0%, #4A90E2 100%)',
-              zIndex: hover ? 3 : 1,
-              boxShadow: hover ? '4px 4px 0 rgba(0,0,0,0.2)' : 'none',
+              zIndex: isHovered ? 3 : 1,
+              boxShadow: isHovered ? '4px 4px 0 rgba(0,0,0,0.2)' : 'none',
             }}
           >
-            {/* Pixel Icon */}
+            {/* HD Image dengan kualitas tinggi */}
             <div 
-              className="absolute top-1/2 left-1/2 transition-all duration-500"
+              className="w-full h-full transition-all duration-400"
               style={{
-                width: hover ? '60px' : '120px',
-                height: hover ? '60px' : '120px',
-                transform: 'translate(-50%, -50%)',
-                backgroundImage: isTask ? taskData?.icon : foodData?.icon,
-                backgroundSize: 'contain',
+                backgroundImage: `url(${isTask ? taskData?.images?.[0] : foodData?.images?.[0]})`,
+                backgroundSize: isHovered ? 'cover' : 'cover',
+                backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
-                imageRendering: 'pixelated',
+                imageRendering: 'auto', // Menggunakan auto untuk kualitas HD
+                transform: isHovered ? 'scale(1.1)' : 'scale(1)',
+                filter: isHovered ? 'none' : 'none',
               }}
             />
           </div>
 
-          {/* Content Section - Expands on hover */}
+          {/* Bottom Section */}
           <div
-            className="absolute transition-all duration-500 ease-in-out overflow-hidden"
+            className="absolute transition-all duration-400 overflow-hidden"
             style={{
               left: '4px',
               right: '4px',
               bottom: '4px',
-              top: hover ? '16px' : '75%',
+              top: isHovered ? '30%' : '70%',
               background: isTask 
                 ? 'linear-gradient(to bottom right, #FF8C42, #FFD93D)'
                 : 'linear-gradient(to bottom right, #6BCF7F, #4A90E2)',
-              border: '4px solid #2D3748',
-              borderTopLeftRadius: hover ? '80px' : '0px',
+              border: '3px solid #2D3748',
               zIndex: 2,
-              boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.1)',
+              boxShadow: 'inset 0 3px 0 rgba(0,0,0,0.1)',
             }}
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
-            
-            <div className="absolute bottom-0 left-0 right-0 p-5 flex flex-col justify-end h-full">
-              {/* Title */}
+            <div className="absolute bottom-0 left-0 right-0 px-4 pb-4 h-full flex flex-col justify-end">
+              {/* Title - Lebih Besar */}
               <div className="mb-3">
                 <h3
-                  className="text-white font-bold leading-tight"
+                  className="text-white font-bold"
                   style={{
-                    fontSize: '14px',
+                    fontSize: '12px',
                     textShadow: '2px 2px 0 rgba(0,0,0,0.3)',
+                    lineHeight: '1.4',
+                    marginBottom: '8px',
                   }}
                 >
                   {isTask ? taskData?.title : foodData?.name}
@@ -113,42 +135,43 @@ export default function UnifiedCard({ type, data }: CardProps) {
 
               {/* Info Grid - Shows on hover */}
               <div
-                className="transition-all duration-500"
+                className="transition-all duration-400"
                 style={{
-                  opacity: hover ? 1 : 0,
-                  transform: hover ? 'translateY(0)' : 'translateY(10px)',
+                  opacity: isHovered ? 1 : 0,
+                  transform: isHovered ? 'translateY(0)' : 'translateY(10px)',
+                  marginBottom: '12px',
                 }}
               >
-                <div className="grid grid-cols-2 gap-2 mb-3">
+                <div className="grid grid-cols-2 gap-2">
                   {isTask && taskData && (
                     <>
-                      <div 
-                        className="p-2"
+                      <div
+                        className="p-2 text-center"
                         style={{
                           backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                          backdropFilter: 'blur(10px)',
                           border: '2px solid rgba(255, 255, 255, 0.3)',
+                          backdropFilter: 'blur(10px)',
                         }}
                       >
-                        <div className="flex items-center gap-1 mb-1">
-                          <DollarSign size={10} color="white" />
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <DollarSign size={12} color="white" />
                         </div>
-                        <span className="text-white text-[8px] block">
+                        <span className="text-white text-[10px] font-bold block">
                           {taskData.reward}
                         </span>
                       </div>
-                      <div 
-                        className="p-2"
+                      <div
+                        className="p-2 text-center"
                         style={{
                           backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                          backdropFilter: 'blur(10px)',
                           border: '2px solid rgba(255, 255, 255, 0.3)',
+                          backdropFilter: 'blur(10px)',
                         }}
                       >
-                        <div className="flex items-center gap-1 mb-1">
-                          <Clock size={10} color="white" />
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <Clock size={12} color="white" />
                         </div>
-                        <span className="text-white text-[8px] block">
+                        <span className="text-white text-[10px] font-bold block">
                           {taskData.duration}
                         </span>
                       </div>
@@ -157,31 +180,31 @@ export default function UnifiedCard({ type, data }: CardProps) {
 
                   {!isTask && foodData && (
                     <>
-                      <div 
-                        className="p-2"
+                      <div
+                        className="p-2 text-center"
                         style={{
                           backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                          backdropFilter: 'blur(10px)',
                           border: '2px solid rgba(255, 255, 255, 0.3)',
+                          backdropFilter: 'blur(10px)',
                         }}
                       >
-                        <span className="text-white text-[7px] block mb-1">PRICE</span>
-                        <span className="text-white text-[10px] font-bold block">
+                        <span className="text-white text-[8px] block mb-1">PRICE</span>
+                        <span className="text-white text-[12px] font-bold block">
                           ${foodData.price}
                         </span>
                       </div>
-                      <div 
-                        className="p-2"
+                      <div
+                        className="p-2 text-center"
                         style={{
                           backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                          backdropFilter: 'blur(10px)',
                           border: '2px solid rgba(255, 255, 255, 0.3)',
+                          backdropFilter: 'blur(10px)',
                         }}
                       >
-                        <div className="flex items-center gap-1 mb-1">
-                          <Star size={10} color="white" fill="white" />
+                        <div className="flex items-center justify-center gap-1 mb-1">
+                          <Star size={12} color="white" fill="white" />
                         </div>
-                        <span className="text-white text-[8px] block">
+                        <span className="text-white text-[10px] font-bold block">
                           {foodData.rating}
                         </span>
                       </div>
@@ -190,11 +213,11 @@ export default function UnifiedCard({ type, data }: CardProps) {
                 </div>
               </div>
 
-              {/* Location & Button */}
+              {/* Location & Button - Lebih Besar */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 text-white/90">
-                  <MapPin size={12} />
-                  <span style={{ fontSize: '8px' }}>
+                <div className="flex items-center gap-2 text-white/90">
+                  <MapPin size={14} />
+                  <span style={{ fontSize: '8px', fontWeight: 'bold' }}>
                     {isTask ? taskData?.location : foodData?.location}
                   </span>
                 </div>
@@ -207,49 +230,33 @@ export default function UnifiedCard({ type, data }: CardProps) {
                       router.push(`/food/${foodData._id}`);
                     }
                   }}
-                  className="px-4 py-2 font-bold transition-all duration-300"
+                  className="px-4 py-2 font-bold transition-all duration-200"
                   style={{
-                    backgroundColor: hover ? '#FFD93D' : 'white',
+                    backgroundColor: 'white',
                     color: isTask ? '#FF8C42' : '#6BCF7F',
                     border: '3px solid rgba(255, 255, 255, 0.5)',
                     fontSize: '8px',
                     boxShadow: '3px 3px 0 rgba(0,0,0,0.2)',
-                    transform: hover ? 'scale(1.05)' : 'scale(1)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = isTask ? '#FFD93D' : '#4A90E2';
+                    e.currentTarget.style.color = '#2D3748';
+                    e.currentTarget.style.transform = 'translate(2px, 2px)';
+                    e.currentTarget.style.boxShadow = '1px 1px 0 rgba(0,0,0,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'white';
+                    e.currentTarget.style.color = isTask ? '#FF8C42' : '#6BCF7F';
+                    e.currentTarget.style.transform = 'translate(0, 0)';
+                    e.currentTarget.style.boxShadow = '3px 3px 0 rgba(0,0,0,0.2)';
                   }}
                 >
-                  {isTask ? 'VIEW' : 'BUY'}
+                  {isTask ? 'VIEW TASK' : 'BUY NOW'}
                 </button>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Floating Pixel Decorations */}
-        <div
-          className="absolute transition-all duration-500"
-          style={{
-            top: '12px',
-            left: '12px',
-            width: '8px',
-            height: '8px',
-            backgroundColor: isTask ? '#FFD93D' : '#4A90E2',
-            opacity: hover ? 1 : 0,
-            transform: hover ? 'scale(1)' : 'scale(0)',
-          }}
-        />
-        <div
-          className="absolute transition-all duration-700"
-          style={{
-            top: '24px',
-            left: '24px',
-            width: '6px',
-            height: '6px',
-            backgroundColor: isTask ? '#FF8C42' : '#6BCF7F',
-            opacity: hover ? 1 : 0,
-            transform: hover ? 'scale(1)' : 'scale(0)',
-            transitionDelay: '100ms',
-          }}
-        />
       </div>
     </>
   );

@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { ArrowLeft, Plus, X, Upload } from 'lucide-react';
+import { ArrowLeft, Plus, X, Upload, Image as ImageIcon } from 'lucide-react';
 
 export default function PostPage() {
   const router = useRouter();
   const [postType, setPostType] = useState<'task' | 'food' | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState('');
-
 
   // Task form state
   const [taskTitle, setTaskTitle] = useState('');
@@ -30,10 +30,79 @@ export default function PostPage() {
   const [foodAvailableUntil, setFoodAvailableUntil] = useState('');
   const [restaurant, setRestaurant] = useState('');
 
-  const [images, setImages] = useState<string[]>([]);
+  // Images state
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
 
   const taskCategories = ['PETS', 'CLEANING', 'OUTDOOR', 'DELIVERY', 'HELPING'];
   const foodCategories = ['INDONESIAN', 'WESTERN', 'ASIAN', 'BAKERY', 'DESSERT'];
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    // Validasi jumlah file
+    if (imageFiles.length + files.length > 5) {
+      setError('Maximum 5 images allowed');
+      return;
+    }
+
+    // Validasi ukuran file
+    const validFiles = files.filter(file => {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Each image must be less than 5MB');
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      setImageFiles(prev => [...prev, ...validFiles]);
+      
+      // Create previews
+      validFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreviews(prev => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setUploadedUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadImages = async () => {
+    if (imageFiles.length === 0) return [];
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      imageFiles.forEach(file => {
+        formData.append('images', file);
+      });
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+
+      const data = await response.json();
+      setUploadedUrls(data.urls);
+      return data.urls;
+    } catch (err) {
+      setError('Failed to upload images');
+      return [];
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const addRequirement = () => {
     setTaskRequirements([...taskRequirements, '']);
@@ -54,6 +123,23 @@ export default function PostPage() {
     setIsSubmitting(true);
     setError('');
 
+    // Validasi: minimal 1 gambar wajib
+    if (imageFiles.length === 0) {
+      setError('Please upload at least one image');
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Upload images first
+    let imageUrls: string[] = [];
+    if (imageFiles.length > 0) {
+      imageUrls = await uploadImages();
+      if (imageUrls.length === 0 && imageFiles.length > 0) {
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     let endpoint = '';
     let payload = {};
 
@@ -65,9 +151,8 @@ export default function PostPage() {
         category: taskCategory,
         duration: taskDuration,
         reward: taskReward,
-        requirements: taskRequirements.filter(req => req.trim() !== ''), // Hanya kirim yang terisi
-        // Tambahkan properti lain yang mungkin Anda perlukan, seperti 'icon', 'location', dll.
-        icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect x='36' y='20' width='24' height='12' fill='%23FF8C42'/%3E%3Crect x='24' y='32' width='48' height='12' fill='%23FF8C42'/%3E%3Crect x='32' y='44' width='12' height='20' fill='%234A90E2'/%3E%3Crect x='52' y='44' width='12' height='20' fill='%234A90E2'/%3E%3Crect x='28' y='64' width='12' height='12' fill='%232D3748'/%3E%3Crect x='56' y='64' width='12' height='12' fill='%232D3748'/%3E%3C/svg%3E")`,
+        requirements: taskRequirements.filter(req => req.trim() !== ''),
+        images: imageUrls,
         location: "1.0 KM AWAY"
       };
     } else if (postType === 'food') {
@@ -80,9 +165,8 @@ export default function PostPage() {
         price: foodPrice,
         portions: foodPortions,
         availableUntil: foodAvailableUntil,
-         // Tambahkan properti lain yang mungkin Anda perlukan
+        images: imageUrls,
         rating: "N/A",
-        icon: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect x='16' y='40' width='64' height='8' fill='%234A90E2'/%3E%3Crect x='20' y='48' width='56' height='24' fill='%23FFD93D'/%3E%3Crect x='32' y='32' width='32' height='8' fill='%23FF8C42'/%3E%3Crect x='36' y='24' width='24' height='8' fill='%23FF8C42'/%3E%3C/svg%3E")`,
         location: "1.0 KM AWAY",
       };
     }
@@ -100,7 +184,6 @@ export default function PostPage() {
         throw new Error('Something went wrong');
       }
 
-      // Redirect based on type
       if (postType === 'task') {
         router.push('/profile?tab=tasks&subtab=posted');
       } else {
@@ -145,7 +228,6 @@ export default function PostPage() {
             BACK
           </button>
 
-          {/* Type Selection */}
           {!postType ? (
             <div>
               <h1
@@ -171,7 +253,6 @@ export default function PostPage() {
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Task Option */}
                 <button
                   onClick={() => setPostType('task')}
                   className="p-8 transition-all duration-150 text-center"
@@ -179,16 +260,6 @@ export default function PostPage() {
                     backgroundColor: 'white',
                     border: '4px solid #2D3748',
                     boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translate(-3px, -3px)';
-                    e.currentTarget.style.boxShadow = '9px 9px 0 rgba(0,0,0,0.2)';
-                    e.currentTarget.style.borderColor = '#FF8C42';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translate(0, 0)';
-                    e.currentTarget.style.boxShadow = '6px 6px 0 rgba(0,0,0,0.15)';
-                    e.currentTarget.style.borderColor = '#2D3748';
                   }}
                 >
                   <div
@@ -211,7 +282,6 @@ export default function PostPage() {
                   </p>
                 </button>
 
-                {/* Food Option */}
                 <button
                   onClick={() => setPostType('food')}
                   className="p-8 transition-all duration-150 text-center"
@@ -219,16 +289,6 @@ export default function PostPage() {
                     backgroundColor: 'white',
                     border: '4px solid #2D3748',
                     boxShadow: '6px 6px 0 rgba(0,0,0,0.15)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translate(-3px, -3px)';
-                    e.currentTarget.style.boxShadow = '9px 9px 0 rgba(0,0,0,0.2)';
-                    e.currentTarget.style.borderColor = '#6BCF7F';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translate(0, 0)';
-                    e.currentTarget.style.boxShadow = '6px 6px 0 rgba(0,0,0,0.15)';
-                    e.currentTarget.style.borderColor = '#2D3748';
                   }}
                 >
                   <div
@@ -253,15 +313,9 @@ export default function PostPage() {
               </div>
             </div>
           ) : (
-            // Form Section
             <div>
               <div className="flex items-center justify-between mb-8">
-                <h1
-                  style={{
-                    fontSize: '28px',
-                    color: '#2D3748',
-                  }}
-                >
+                <h1 style={{ fontSize: '28px', color: '#2D3748' }}>
                   {postType === 'task' ? 'POST TASK' : 'POST FOOD'}
                 </h1>
                 <button
@@ -288,9 +342,7 @@ export default function PostPage() {
                   }}
                 >
                   {postType === 'task' ? (
-                    // Task Form
                     <>
-                      {/* Title */}
                       <div className="mb-6">
                         <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
                           TASK TITLE *
@@ -311,7 +363,6 @@ export default function PostPage() {
                         />
                       </div>
 
-                      {/* Description */}
                       <div className="mb-6">
                         <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
                           DESCRIPTION *
@@ -333,7 +384,6 @@ export default function PostPage() {
                         />
                       </div>
 
-                      {/* Category & Duration */}
                       <div className="grid grid-cols-2 gap-6 mb-6">
                         <div>
                           <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
@@ -378,7 +428,6 @@ export default function PostPage() {
                         </div>
                       </div>
 
-                      {/* Reward */}
                       <div className="mb-6">
                         <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
                           REWARD ($) *
@@ -400,7 +449,6 @@ export default function PostPage() {
                         />
                       </div>
 
-                      {/* Requirements */}
                       <div className="mb-6">
                         <div className="flex items-center justify-between mb-3">
                           <label style={{ fontSize: '10px', color: '#2D3748' }}>
@@ -453,9 +501,7 @@ export default function PostPage() {
                       </div>
                     </>
                   ) : (
-                    // Food Form
                     <>
-                      {/* Name */}
                       <div className="mb-6">
                         <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
                           FOOD NAME *
@@ -476,7 +522,6 @@ export default function PostPage() {
                         />
                       </div>
 
-                      {/* Description */}
                       <div className="mb-6">
                         <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
                           DESCRIPTION *
@@ -498,7 +543,6 @@ export default function PostPage() {
                         />
                       </div>
 
-                      {/* Restaurant */}
                       <div className="mb-6">
                         <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
                           RESTAURANT NAME *
@@ -519,7 +563,6 @@ export default function PostPage() {
                         />
                       </div>
 
-                      {/* Category & Price */}
                       <div className="grid grid-cols-2 gap-6 mb-6">
                         <div>
                           <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
@@ -566,7 +609,6 @@ export default function PostPage() {
                         </div>
                       </div>
 
-                      {/* Portions & Available Until */}
                       <div className="grid grid-cols-2 gap-6 mb-6">
                         <div>
                           <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
@@ -611,24 +653,27 @@ export default function PostPage() {
                     </>
                   )}
 
-                  {/* Images Upload */}
-                  <div>
+                  {/* Images Upload Section - FIXED */}
+                  <div className="mb-6">
                     <label style={{ fontSize: '10px', color: '#2D3748', display: 'block', marginBottom: '8px' }}>
-                      IMAGES (OPTIONAL)
+                      IMAGES *
                     </label>
-                    <div
-                      className="p-8 text-center cursor-pointer transition-all duration-150"
+                    
+                    <input
+                      type="file"
+                      id="image-upload"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      style={{ display: 'none' }}
+                    />
+                    
+                    <label
+                      htmlFor="image-upload"
+                      className="flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all duration-150 min-h-[140px]"
                       style={{
                         border: '3px dashed #2D3748',
                         backgroundColor: '#FFF8F0',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = postType === 'task' ? '#FF8C42' : '#6BCF7F';
-                        e.currentTarget.style.backgroundColor = '#F7FAFC';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = '#2D3748';
-                        e.currentTarget.style.backgroundColor = '#FFF8F0';
                       }}
                     >
                       <Upload size={32} style={{ color: '#A0AEC0', margin: '0 auto 12px' }} />
@@ -638,42 +683,78 @@ export default function PostPage() {
                       <p style={{ fontSize: '7px', color: '#A0AEC0' }}>
                         MAX 5 IMAGES, 5MB EACH
                       </p>
-                    </div>
+                    </label>
+
+                    {/* Image Previews */}
+                    {imagePreviews.length > 0 && (
+                      <div className="grid grid-cols-5 gap-3 mt-4">
+                        {imagePreviews.map((preview, index) => (
+                          <div
+                            key={index}
+                            className="relative"
+                            style={{
+                              border: '3px solid #2D3748',
+                              aspectRatio: '1/1',
+                            }}
+                          >
+                            <img
+                              src={preview}
+                              alt={`Preview ${index + 1}`}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute -top-2 -right-2 p-1"
+                              style={{
+                                backgroundColor: '#FF8C42',
+                                border: '2px solid #2D3748',
+                                borderRadius: '50%',
+                              }}
+                            >
+                              <X size={12} color="white" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
-                 {/* Error Message */}
+
+                {/* Error Message */}
                 {error && (
-                    <div className="mb-4 p-3 text-center" style={{ backgroundColor: '#FF8C42', border: '3px solid #E67A30', color: 'white', fontSize: '10px' }}>
-                        {error}
-                    </div>
+                  <div 
+                    className="mb-4 p-3 text-center" 
+                    style={{ 
+                      backgroundColor: '#FF8C42', 
+                      border: '3px solid #E67A30', 
+                      color: 'white', 
+                      fontSize: '10px' 
+                    }}
+                  >
+                    {error}
+                  </div>
                 )}
+
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                   className="w-full py-5 font-bold transition-all duration-150"
                   style={{
-                    backgroundColor: isSubmitting ? '#A0AEC0' : (postType === 'task' ? '#FF8C42' : '#6BCF7F'),
+                    backgroundColor: (isSubmitting || isUploading) ? '#A0AEC0' : (postType === 'task' ? '#FF8C42' : '#6BCF7F'),
                     color: 'white',
                     border: '4px solid #2D3748',
                     fontSize: '14px',
                     boxShadow: '8px 8px 0 rgba(0,0,0,0.2)',
-                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isSubmitting) {
-                      e.currentTarget.style.transform = 'translate(-3px, -3px)';
-                      e.currentTarget.style.boxShadow = '11px 11px 0 rgba(0,0,0,0.25)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isSubmitting) {
-                      e.currentTarget.style.transform = 'translate(0, 0)';
-                      e.currentTarget.style.boxShadow = '8px 8px 0 rgba(0,0,0,0.2)';
-                    }
+                    cursor: (isSubmitting || isUploading) ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {isSubmitting ? 'POSTING...' : `POST ${postType?.toUpperCase()}`}
+                  {isUploading ? 'UPLOADING IMAGES...' : isSubmitting ? 'POSTING...' : `POST ${postType?.toUpperCase()}`}
                 </button>
               </form>
             </div>
