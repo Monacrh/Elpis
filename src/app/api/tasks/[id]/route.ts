@@ -8,12 +8,13 @@ export async function GET(
 ) {
   try {
     console.log("✅ MONGODB_URI:", process.env.MONGODB_URI);
-    console.log("🆔 Task ID:", params.id);
+
+    const { id } = params; // langsung dari params, bukan await
 
     const client = await clientPromise;
     const db = client.db("elpis_db");
 
-    const task = await db.collection("tasks").findOne({ _id: new ObjectId(params.id) });
+    const task = await db.collection("tasks").findOne({ _id: new ObjectId(id) });
 
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
@@ -21,10 +22,7 @@ export async function GET(
 
     return NextResponse.json({ task });
   } catch (e) {
-    console.error("❌ Error in GET /api/task/[id]:", e);
-    return NextResponse.json(
-      { error: "Unable to fetch task" },
-      { status: 500 }
-    );
+    console.error("❌ Error fetching task:", e);
+    return NextResponse.json({ error: "Unable to fetch task" }, { status: 500 });
   }
 }
