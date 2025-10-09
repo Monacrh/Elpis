@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
+    console.log("✅ Connected to MongoDB:", process.env.MONGODB_URI ? "Yes" : "No");
     const client = await clientPromise;
     const db = client.db("elpis_db"); // Ganti "elpis" dengan nama database Anda
-
     const foods = await db.collection("foods").find({}).toArray();
 
     return NextResponse.json({ foods });
